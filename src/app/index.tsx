@@ -72,7 +72,7 @@ export default function HomeScreen() {
             </View>
 
             <View style={styles.heroContent}>
-              <Text style={styles.heroCategory}>المشهد المحلي والعالمي</Text>
+              <Text style={styles.heroCategory}>المشهد العربي والعالمي</Text>
 
               <Text style={styles.heroTitle}>
                 مستجدات محلية ودولية تتصدر المشهد الإخباري اليوم

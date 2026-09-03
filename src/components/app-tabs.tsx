@@ -39,7 +39,7 @@ export default function AppTabs() {
       />
 
       <Tabs.Screen
-        name="explore"
+        name="sections"
         options={{
           title: 'الأقسام',
           tabBarIcon: ({ color, focused, size }) => (
