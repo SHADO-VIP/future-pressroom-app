@@ -1,98 +1,347 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+import { ScrollView, StyleSheet, Text, View, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
-import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { BottomTabInset, Colors, Spacing } from '@/constants/theme';
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+const latestArticles = [
+  {
+    id: '1',
+    category: 'سياسة',
+    title: 'تطورات سياسية متسارعة تعيد رسم أولويات المرحلة المقبلة',
+    time: 'منذ 12 دقيقة',
+  },
+  {
+    id: '2',
+    category: 'اقتصاد',
+    title: 'الأسواق تترقب مؤشرات جديدة وسط تحولات اقتصادية عالمية',
+    time: 'منذ 35 دقيقة',
+  },
+  {
+    id: '3',
+    category: 'تكنولوجيا وذكاء اصطناعي',
+    title: 'أدوات الذكاء الاصطناعي تغيّر أساليب العمل داخل غرف الأخبار',
+    time: 'منذ ساعة',
+  },
+];
 
 export default function HomeScreen() {
+  const colorScheme = useColorScheme();
+  const colors = Colors[colorScheme === 'dark' ? 'dark' : 'light'];
+  const styles = createStyles(colors);
+
   return (
-    <ThemedView style={styles.container}>
-      <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
+    <View style={styles.screen}>
+      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
 
-        <ThemedText type="code" style={styles.code}>
-          get started
-        </ThemedText>
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
+        <ScrollView
+          contentContainerStyle={styles.content}
+          showsVerticalScrollIndicator={false}>
+          <View style={styles.header}>
+            <View style={styles.brand}>
+              <View style={styles.brandMark}>
+                <Text style={styles.brandMarkText}>F</Text>
+              </View>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
+              <View style={styles.brandCopy}>
+                <Text style={styles.brandName}>Future Pressroom AI</Text>
+                <Text style={styles.brandTagline}>صحافة المستقبل تبدأ هنا</Text>
+              </View>
+            </View>
 
-        {Platform.OS === 'web' && <WebBadge />}
+            <View style={styles.smartBadge}>
+              <Text style={styles.smartBadgeText}>تغطية ذكية</Text>
+            </View>
+          </View>
+
+          <View style={styles.divider} />
+
+          <View style={styles.sectionHeading}>
+            <Text style={styles.sectionTitle}>أبرز الأخبار</Text>
+            <Text style={styles.sectionLabel}>الرئيسية</Text>
+          </View>
+
+          <View style={styles.heroCard}>
+            <View style={styles.heroImage}>
+              <View style={styles.breakingBadge}>
+                <Text style={styles.breakingText}>عاجل</Text>
+              </View>
+
+              <Text style={styles.heroImageText}>FUTURE PRESSROOM</Text>
+            </View>
+
+            <View style={styles.heroContent}>
+              <Text style={styles.heroCategory}>المشهد المحلي والعالمي</Text>
+
+              <Text style={styles.heroTitle}>
+                مستجدات محلية ودولية تتصدر المشهد الإخباري اليوم
+              </Text>
+
+              <Text style={styles.heroSummary}>
+                قراءة موجزة لأهم التطورات، مع سياق واضح ومعلومات موثقة تساعد القارئ
+                على فهم ما يحدث.
+              </Text>
+
+              <Text style={styles.heroTime}>آخر تحديث: منذ 5 دقائق</Text>
+            </View>
+          </View>
+
+          <View style={styles.latestHeader}>
+            <Text style={styles.latestTitle}>أحدث الأخبار</Text>
+            <Text style={styles.viewAll}>عرض الكل</Text>
+          </View>
+
+          <View style={styles.articleList}>
+            {latestArticles.map((article) => (
+              <View key={article.id} style={styles.articleCard}>
+                <View style={styles.articleThumbnail}>
+                  <Text style={styles.thumbnailLetter}>F</Text>
+                </View>
+
+                <View style={styles.articleContent}>
+                  <Text style={styles.articleCategory}>{article.category}</Text>
+                  <Text style={styles.articleTitle}>{article.title}</Text>
+                  <Text style={styles.articleTime}>{article.time}</Text>
+                </View>
+              </View>
+            ))}
+          </View>
+        </ScrollView>
       </SafeAreaView>
-    </ThemedView>
+    </View>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    flexDirection: 'row',
-  },
-  safeArea: {
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    alignItems: 'center',
-    gap: Spacing.three,
-    paddingBottom: BottomTabInset + Spacing.three,
-    maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
-  },
-  title: {
-    textAlign: 'center',
-  },
-  code: {
-    textTransform: 'uppercase',
-  },
-  stepContainer: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
-  },
-});
+function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
+  return StyleSheet.create({
+    screen: {
+      flex: 1,
+      backgroundColor: colors.background,
+    },
+    safeArea: {
+      flex: 1,
+    },
+    content: {
+      paddingHorizontal: Spacing.three,
+      paddingTop: Spacing.two,
+      paddingBottom: BottomTabInset + Spacing.five,
+    },
+    header: {
+      flexDirection: 'row-reverse',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      gap: Spacing.two,
+    },
+    brand: {
+      flex: 1,
+      flexDirection: 'row-reverse',
+      alignItems: 'center',
+      gap: Spacing.two,
+    },
+    brandMark: {
+      width: 44,
+      height: 44,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: 12,
+      backgroundColor: colors.primary,
+      borderWidth: 1,
+      borderColor: colors.accent,
+    },
+    brandMarkText: {
+      color: colors.accent,
+      fontSize: 22,
+      fontWeight: '800',
+    },
+    brandCopy: {
+      flex: 1,
+      alignItems: 'flex-end',
+    },
+    brandName: {
+      color: colors.text,
+      fontSize: 17,
+      fontWeight: '800',
+      textAlign: 'right',
+    },
+    brandTagline: {
+      marginTop: 2,
+      color: colors.textSecondary,
+      fontSize: 12,
+      textAlign: 'right',
+      writingDirection: 'rtl',
+    },
+    smartBadge: {
+      paddingHorizontal: 10,
+      paddingVertical: 7,
+      borderRadius: 999,
+      backgroundColor: colors.backgroundSelected,
+    },
+    smartBadgeText: {
+      color: colors.accentDark,
+      fontSize: 11,
+      fontWeight: '700',
+      writingDirection: 'rtl',
+    },
+    divider: {
+      height: 1,
+      marginVertical: Spacing.three,
+      backgroundColor: colors.border,
+    },
+    sectionHeading: {
+      flexDirection: 'row-reverse',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: Spacing.three,
+    },
+    sectionTitle: {
+      color: colors.text,
+      fontSize: 24,
+      fontWeight: '800',
+      textAlign: 'right',
+      writingDirection: 'rtl',
+    },
+    sectionLabel: {
+      color: colors.accent,
+      fontSize: 13,
+      fontWeight: '700',
+      writingDirection: 'rtl',
+    },
+    heroCard: {
+      overflow: 'hidden',
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 24,
+      backgroundColor: colors.backgroundElement,
+    },
+    heroImage: {
+      height: 190,
+      alignItems: 'center',
+      justifyContent: 'center',
+      backgroundColor: colors.primary,
+    },
+    heroImageText: {
+      color: colors.accent,
+      fontSize: 14,
+      fontWeight: '800',
+      letterSpacing: 1.5,
+    },
+    breakingBadge: {
+      position: 'absolute',
+      top: Spacing.three,
+      right: Spacing.three,
+      paddingHorizontal: 12,
+      paddingVertical: 6,
+      borderRadius: 999,
+      backgroundColor: colors.breaking,
+    },
+    breakingText: {
+      color: '#FFFFFF',
+      fontSize: 12,
+      fontWeight: '800',
+      writingDirection: 'rtl',
+    },
+    heroContent: {
+      padding: Spacing.three,
+      alignItems: 'flex-end',
+    },
+    heroCategory: {
+      color: colors.accent,
+      fontSize: 13,
+      fontWeight: '800',
+      writingDirection: 'rtl',
+    },
+    heroTitle: {
+      marginTop: Spacing.two,
+      color: colors.text,
+      fontSize: 22,
+      fontWeight: '800',
+      lineHeight: 34,
+      textAlign: 'right',
+      writingDirection: 'rtl',
+    },
+    heroSummary: {
+      marginTop: Spacing.two,
+      color: colors.textSecondary,
+      fontSize: 15,
+      lineHeight: 25,
+      textAlign: 'right',
+      writingDirection: 'rtl',
+    },
+    heroTime: {
+      marginTop: Spacing.three,
+      color: colors.textSecondary,
+      fontSize: 12,
+      textAlign: 'right',
+      writingDirection: 'rtl',
+    },
+    latestHeader: {
+      flexDirection: 'row-reverse',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginTop: Spacing.five,
+      marginBottom: Spacing.three,
+    },
+    latestTitle: {
+      color: colors.text,
+      fontSize: 21,
+      fontWeight: '800',
+      writingDirection: 'rtl',
+    },
+    viewAll: {
+      color: colors.accent,
+      fontSize: 13,
+      fontWeight: '700',
+      writingDirection: 'rtl',
+    },
+    articleList: {
+      gap: Spacing.three,
+    },
+    articleCard: {
+      flexDirection: 'row-reverse',
+      gap: Spacing.three,
+      paddingBottom: Spacing.three,
+      borderBottomWidth: 1,
+      borderBottomColor: colors.border,
+    },
+    articleThumbnail: {
+      width: 92,
+      minHeight: 92,
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRadius: 16,
+      backgroundColor: colors.primary,
+    },
+    thumbnailLetter: {
+      color: colors.accent,
+      fontSize: 28,
+      fontWeight: '800',
+    },
+    articleContent: {
+      flex: 1,
+      alignItems: 'flex-end',
+    },
+    articleCategory: {
+      color: colors.accent,
+      fontSize: 12,
+      fontWeight: '800',
+      writingDirection: 'rtl',
+    },
+    articleTitle: {
+      marginTop: 5,
+      color: colors.text,
+      fontSize: 16,
+      fontWeight: '700',
+      lineHeight: 25,
+      textAlign: 'right',
+      writingDirection: 'rtl',
+    },
+    articleTime: {
+      marginTop: 7,
+      color: colors.textSecondary,
+      fontSize: 11,
+      textAlign: 'right',
+      writingDirection: 'rtl',
+    },
+  });
+}
