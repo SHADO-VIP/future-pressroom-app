@@ -1,6 +1,14 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { Link } from 'expo-router';
 import type { ComponentProps } from 'react';
-import { ScrollView, StyleSheet, Text, View, useColorScheme } from 'react-native';
+import {
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  useColorScheme,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomTabInset, Colors, Spacing } from '@/constants/theme';
@@ -13,6 +21,7 @@ type Category = {
   description: string;
   icon: IconName;
   color: string;
+  href?: '/sections/variety';
 };
 
 const categories: Category[] = [
@@ -64,6 +73,7 @@ const categories: Category[] = [
     description: 'ثقافة ومجتمع وموضوعات متنوعة',
     icon: 'albums-outline',
     color: '#885A8C',
+    href: '/sections/variety',
   },
   {
     id: 'video',
@@ -106,27 +116,48 @@ export default function SectionsScreen() {
           </View>
 
           <View style={styles.grid}>
-            {categories.map((category) => (
-              <View key={category.id} style={styles.categoryCard}>
-                <View
-                  style={[
-                    styles.categoryIcon,
-                    { backgroundColor: `${category.color}20` },
-                  ]}>
-                  <Ionicons
-                    color={category.color}
-                    name={category.icon}
-                    size={27}
-                  />
-                </View>
+            {categories.map((category) => {
+              const cardContent = (
+                <>
+                  <View
+                    style={[
+                      styles.categoryIcon,
+                      { backgroundColor: `${category.color}20` },
+                    ]}>
+                    <Ionicons
+                      color={category.color}
+                      name={category.icon}
+                      size={27}
+                    />
+                  </View>
 
-                <Text style={styles.categoryTitle}>{category.title}</Text>
-                <Text style={styles.categoryDescription}>
-                  {category.description}
-                </Text>
-              </View>
-            ))}
+                  <Text style={styles.categoryTitle}>{category.title}</Text>
+                  <Text style={styles.categoryDescription}>
+                    {category.description}
+                  </Text>
+                </>
+              );
+
+              if (category.href) {
+                return (
+                  <Link key={category.id} href={category.href} asChild>
+                    <Pressable
+                      accessibilityRole="button"
+                      style={styles.categoryCard}>
+                      {cardContent}
+                    </Pressable>
+                  </Link>
+                );
+              }
+
+              return (
+                <View key={category.id} style={styles.categoryCard}>
+                  {cardContent}
+                </View>
+              );
+            })}
           </View>
+
         </ScrollView>
       </SafeAreaView>
     </View>
