@@ -21,7 +21,15 @@ type Category = {
   description: string;
   icon: IconName;
   color: string;
-  href?: '/sections/variety';
+  href:
+  | '/sections/local-global'
+  | '/sections/politics'
+  | '/sections/economy'
+  | '/sections/technology-ai'
+  | '/sections/opinions-articles'
+  | '/sections/sports'
+  | '/sections/variety'
+  | '/sections/video';
 };
 
 const categories: Category[] = [
@@ -31,6 +39,7 @@ const categories: Category[] = [
     description: 'أهم الأخبار والتطورات المحلية والدولية',
     icon: 'globe-outline',
     color: '#B88A35',
+    href: '/sections/local-global',
   },
   {
     id: 'politics',
@@ -38,6 +47,7 @@ const categories: Category[] = [
     description: 'قراءة في القرارات والتحولات السياسية',
     icon: 'business-outline',
     color: '#9B2C35',
+    href: '/sections/politics',
   },
   {
     id: 'economy',
@@ -45,6 +55,7 @@ const categories: Category[] = [
     description: 'الأسواق والأعمال والمؤشرات الاقتصادية',
     icon: 'trending-up-outline',
     color: '#2F7D61',
+    href: '/sections/economy',
   },
   {
     id: 'technology-ai',
@@ -52,6 +63,7 @@ const categories: Category[] = [
     description: 'الابتكار والتقنيات التي تصنع المستقبل',
     icon: 'hardware-chip-outline',
     color: '#4F6FAE',
+    href: '/sections/technology-ai',
   },
   {
     id: 'opinions',
@@ -59,6 +71,7 @@ const categories: Category[] = [
     description: 'تحليلات ووجهات نظر معمقة',
     icon: 'create-outline',
     color: '#8F6826',
+    href: '/sections/opinions-articles',
   },
   {
     id: 'sports',
@@ -66,6 +79,7 @@ const categories: Category[] = [
     description: 'أبرز المنافسات والنتائج الرياضية',
     icon: 'football-outline',
     color: '#3B7C87',
+    href: '/sections/sports',
   },
   {
     id: 'miscellaneous',
@@ -81,6 +95,7 @@ const categories: Category[] = [
     description: 'تقارير ومواد مرئية مختارة',
     icon: 'videocam-outline',
     color: '#A34E42',
+    href: '/sections/video',
   },
 ];
 
