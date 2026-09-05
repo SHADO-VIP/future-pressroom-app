@@ -7,6 +7,7 @@ import {
     ActivityIndicator,
     Pressable,
     ScrollView,
+    Share,
     StyleSheet,
     Text,
     View,
@@ -45,7 +46,23 @@ function convertHtmlToText(value: string) {
         .replace(/&amp;/gu, '&')
         .trim();
 }
+const PUBLIC_SITE_URL = process.env.EXPO_PUBLIC_SITE_URL?.replace(/\/+$/u, '');
 
+async function shareArticle(article: PublishedArticle) {
+    const articleSlug = article.newsItem.seoMetadata.slug;
+    const articleUrl = PUBLIC_SITE_URL
+        ? `${PUBLIC_SITE_URL}/articles/${encodeURIComponent(articleSlug)}`
+        : '';
+
+    const message = articleUrl
+        ? `${article.finalDraft.titleAr}\n\n${articleUrl}`
+        : article.finalDraft.titleAr;
+
+    await Share.share({
+        message,
+        title: article.finalDraft.titleAr,
+    });
+}
 export default function ArticleScreen() {
     const { slug, category, from, search } = useLocalSearchParams<{
         slug: string | string[];
@@ -192,7 +209,19 @@ function ArticleContent({ article, styles }: ArticleContentProps) {
             <Text style={styles.date}>
                 {formatPublishedDate(article.publishedAt)}
             </Text>
-
+            <Pressable
+                accessibilityLabel="مشاركة المقال"
+                accessibilityRole="button"
+                onPress={() => {
+                    void shareArticle(article);
+                }}
+                style={({ pressed }) => [
+                    styles.shareButton,
+                    pressed && styles.pressed,
+                ]}>
+                <Ionicons color="#FFFFFF" name="share-social-outline" size={20} />
+                <Text style={styles.shareButtonText}>مشاركة المقال</Text>
+            </Pressable>
             {article.selectedImage?.imageUrl ? (
                 <Image
                     accessibilityLabel={
@@ -340,6 +369,23 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
             color: colors.textSecondary,
             fontSize: 12,
             textAlign: 'right',
+            writingDirection: 'rtl',
+        },
+        shareButton: {
+            alignSelf: 'flex-end',
+            flexDirection: 'row-reverse',
+            alignItems: 'center',
+            gap: Spacing.two,
+            marginTop: Spacing.three,
+            paddingHorizontal: Spacing.three,
+            paddingVertical: Spacing.two,
+            borderRadius: 14,
+            backgroundColor: colors.accent,
+        },
+        shareButtonText: {
+            color: '#FFFFFF',
+            fontSize: 13,
+            fontWeight: '800',
             writingDirection: 'rtl',
         },
         image: {
