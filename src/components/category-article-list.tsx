@@ -25,6 +25,8 @@ type CategoryArticleListProps = {
 type LoadResult = {
     category: string;
     articles: PublishedArticle[];
+    page: number;
+    totalPages: number;
     failed: boolean;
 };
 
@@ -45,6 +47,8 @@ export function CategoryArticleList({
     const colors = Colors[colorScheme === 'dark' ? 'dark' : 'light'];
     const styles = createStyles(colors);
     const [result, setResult] = useState<LoadResult | null>(null);
+    const [isLoadingMore, setIsLoadingMore] = useState(false);
+    const [loadMoreFailed, setLoadMoreFailed] = useState(false);
 
     useEffect(() => {
         let isActive = true;
@@ -55,10 +59,12 @@ export function CategoryArticleList({
             limit: 20,
             signal: controller.signal,
         })
-            .then(({ articles }) => {
+            .then(({ articles, pagination }) => {
                 setResult({
                     category,
                     articles,
+                    page: pagination.page,
+                    totalPages: pagination.totalPages,
                     failed: false,
                 });
             })
@@ -70,6 +76,8 @@ export function CategoryArticleList({
                 setResult({
                     category,
                     articles: [],
+                    page: 1,
+                    totalPages: 0,
                     failed: true,
                 });
             })
@@ -86,7 +94,51 @@ export function CategoryArticleList({
     }, [category, onRefreshComplete, refreshKey]);
 
     const currentResult = result?.category === category ? result : null;
+    async function handleLoadMore() {
+        if (
+            !currentResult ||
+            isLoadingMore ||
+            currentResult.page >= currentResult.totalPages
+        ) {
+            return;
+        }
 
+        setIsLoadingMore(true);
+        setLoadMoreFailed(false);
+
+        try {
+            const { articles, pagination } = await getPublishedArticles({
+                category,
+                page: currentResult.page + 1,
+                limit: 20,
+            });
+
+            setResult((current) => {
+                if (!current || current.category !== category) {
+                    return current;
+                }
+
+                const existingIds = new Set(
+                    current.articles.map((article) => article.id),
+                );
+                const newArticles = articles.filter(
+                    (article) => !existingIds.has(article.id),
+                );
+
+                return {
+                    ...current,
+                    articles: [...current.articles, ...newArticles],
+                    page: pagination.page,
+                    totalPages: pagination.totalPages,
+                    failed: false,
+                };
+            });
+        } catch {
+            setLoadMoreFailed(true);
+        } finally {
+            setIsLoadingMore(false);
+        }
+    }
     if (!currentResult) {
         return (
             <View style={styles.messageCard}>
@@ -168,6 +220,24 @@ export function CategoryArticleList({
                     </Pressable>
                 </Link>
             ))}
+            {currentResult.page < currentResult.totalPages ? (
+                <Pressable
+                    accessibilityRole="button"
+                    disabled={isLoadingMore}
+                    onPress={handleLoadMore}
+                    style={({ pressed }) => [
+                        styles.loadMoreButton,
+                        pressed && !isLoadingMore && styles.loadMoreButtonPressed,
+                    ]}>
+                    {isLoadingMore ? (
+                        <ActivityIndicator color={colors.background} size="small" />
+                    ) : (
+                        <Text style={styles.loadMoreText}>
+                            {loadMoreFailed ? 'تعذر التحميل، حاول مرة أخرى' : 'تحميل المزيد'}
+                        </Text>
+                    )}
+                </Pressable>
+            ) : null}
         </View>
     );
 }
@@ -177,6 +247,24 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
         articleList: {
             gap: Spacing.three,
             marginTop: Spacing.three,
+        },
+        loadMoreButton: {
+            minHeight: 50,
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingHorizontal: Spacing.three,
+            borderRadius: 16,
+            backgroundColor: colors.accent,
+        },
+        loadMoreButtonPressed: {
+            opacity: 0.7,
+        },
+        loadMoreText: {
+            color: colors.background,
+            fontSize: 14,
+            fontWeight: '800',
+            textAlign: 'center',
+            writingDirection: 'rtl',
         },
         articleCard: {
             flexDirection: 'row-reverse',
