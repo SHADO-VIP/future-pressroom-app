@@ -3,6 +3,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useState, type ComponentProps } from 'react';
 import {
+    Platform,
     Pressable,
     RefreshControl,
     ScrollView,
@@ -147,11 +148,9 @@ export default function CategoryScreen() {
                     showsVerticalScrollIndicator={false}>
                     <View style={styles.topBar}>
                         <View style={styles.heading}>
-                            <Text style={styles.eyebrow}>
-                                {requestedSlug && varietySlugs.has(requestedSlug)
-                                    ? 'منوعات'
-                                    : 'الأقسام'}
-                            </Text>
+                            {requestedSlug && varietySlugs.has(requestedSlug) ? (
+                                <Text style={styles.eyebrow}>منوعات</Text>
+                            ) : null}
                             <Text style={styles.title}>
                                 {category?.title ?? 'القسم غير موجود'}
                             </Text>
@@ -253,7 +252,7 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
         title: {
             marginTop: Spacing.one,
             color: colors.accent,
-            fontSize: 30,
+            fontSize: Platform.OS === 'android' ? 23 : 30,
             fontWeight: '800',
             textAlign: 'right',
             writingDirection: 'rtl',
@@ -302,7 +301,7 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
         },
         sectionTitle: {
             color: colors.text,
-            fontSize: 24,
+            fontSize: Platform.OS === 'android' ? 20 : 23,
             fontWeight: '800',
             textAlign: 'right',
             writingDirection: 'rtl',

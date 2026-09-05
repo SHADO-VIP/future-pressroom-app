@@ -2,6 +2,7 @@
   "expo": {
     "name": "future-pressroom-mobile",
     "slug": "future-pressroom-mobile",
+    "owner": "future-pressroom-ai",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/brand/future-pressroom-icon.png",
@@ -11,6 +12,7 @@
       "icon": "./assets/images/brand/future-pressroom-icon.png"
     },
     "android": {
+      "package": "com.futurepressroom.mobile",
       "adaptiveIcon": {
         "backgroundColor": "#07162D",
         "foregroundImage": "./assets/images/brand/future-pressroom-foreground.png"
@@ -36,6 +38,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "ce3e1517-0623-4b25-9a7e-1eb1be72f897"
+      }
     }
   }
 }

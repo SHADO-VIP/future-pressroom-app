@@ -2,12 +2,13 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Link } from 'expo-router';
 import type { ComponentProps } from 'react';
 import {
+  Platform,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   View,
-  useColorScheme,
+  useColorScheme
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -207,7 +208,7 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
 
     title: {
       color: colors.accent,
-      fontSize: 30,
+      fontSize: Platform.OS === 'android' ? 20 : 30,
       fontWeight: '800',
       textAlign: 'right',
       writingDirection: 'rtl',
@@ -289,10 +290,10 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
       marginTop: Spacing.four,
     },
     categoryCard: {
-      width: '47.8%',
-      minHeight: 205,
+     width: Platform.OS === 'android' ? '45%' : '47.8%',
+    minHeight: Platform.OS === 'android' ? 170 : 200,
       alignItems: 'flex-end',
-      padding: Spacing.three,
+     padding: Platform.OS === 'android' ? Spacing.two : Spacing.three,
       borderWidth: 1,
       borderColor: colors.border,
       borderRadius: 20,
@@ -308,9 +309,9 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
     categoryTitle: {
       marginTop: Spacing.three,
       color: colors.text,
-      fontSize: 17,
+     fontSize: Platform.OS === 'android' ? 12 : 16,
       fontWeight: '800',
-      lineHeight: 26,
+     lineHeight: Platform.OS === 'android' ? 19 : 25,
       textAlign: 'right',
       writingDirection: 'rtl',
     },

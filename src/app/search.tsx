@@ -5,6 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
+    Platform,
     Pressable,
     ScrollView,
     StyleSheet,
@@ -28,11 +29,17 @@ type SearchResult = {
 };
 
 function formatPublishedDate(value: string) {
-    return new Date(value).toLocaleDateString('ar-AE', {
+    const formattedDate = new Date(value).toLocaleDateString('ar-AE', {
         day: 'numeric',
         month: 'short',
         year: 'numeric',
     });
+
+    const arabicDigits = '٠١٢٣٤٥٦٧٨٩';
+
+    return formattedDate.replace(/[٠-٩]/gu, (digit) =>
+        String(arabicDigits.indexOf(digit)),
+    );
 }
 
 export default function SearchScreen() {
@@ -156,7 +163,7 @@ export default function SearchScreen() {
                                 }
                             }}
                             onSubmitEditing={handleSearch}
-                            placeholder="اكتب كلمة أو عنوانًا للبحث"
+                            placeholder="اكتب كلمة أو عنواناً للبحث"
                             placeholderTextColor={colors.textSecondary}
                             returnKeyType="search"
                             style={styles.searchInput}
@@ -310,7 +317,7 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
         title: {
             marginTop: Spacing.one,
             color: colors.accent,
-            fontSize: 28,
+            fontSize: Platform.OS === 'android' ? 23 : 28,
             fontWeight: '800',
             textAlign: 'right',
             writingDirection: 'rtl',

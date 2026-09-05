@@ -3,6 +3,7 @@ import { Link } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
+    Platform,
     Pressable,
     StyleSheet,
     Text,
@@ -31,11 +32,17 @@ type LoadResult = {
 };
 
 function formatPublishedDate(value: string) {
-    return new Date(value).toLocaleDateString('ar-AE', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-    });
+  const formattedDate = new Date(value).toLocaleDateString('ar-AE', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+
+  const arabicDigits = '٠١٢٣٤٥٦٧٨٩';
+
+  return formattedDate.replace(/[٠-٩]/gu, (digit) =>
+    String(arabicDigits.indexOf(digit)),
+  );
 }
 
 export function CategoryArticleList({
@@ -208,11 +215,11 @@ export function CategoryArticleList({
                         )}
 
                         <View style={styles.articleContent}>
-                            <Text style={styles.articleTitle}>
+                            <Text numberOfLines={4} style={styles.articleTitle}>
                                 {article.finalDraft.titleAr}
                             </Text>
 
-                            <Text numberOfLines={3} style={styles.articleSummary}>
+                            <Text numberOfLines={2} style={styles.articleSummary}>
                                 {article.finalDraft.summaryAr}
                             </Text>
 
@@ -275,29 +282,33 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
             flexDirection: 'row-reverse',
             alignItems: 'stretch',
             gap: Spacing.three,
-            padding: Spacing.three,
+            padding: Platform.OS === 'android' ? Spacing.two : Spacing.three,
             borderWidth: 1,
             borderColor: colors.border,
             borderRadius: 20,
             backgroundColor: colors.backgroundElement,
         },
         articleImage: {
-            width: 112,
-            minHeight: 132,
+            width: Platform.OS === 'android' ? 92 : 112,
+            height: Platform.OS === 'android' ? 108 : undefined,
+            minHeight: Platform.OS === 'android' ? undefined : 132,
+            alignSelf: 'flex-start',
             borderRadius: 16,
             backgroundColor: colors.backgroundSelected,
         },
         imagePlaceholder: {
-            width: 112,
-            minHeight: 132,
+            width: Platform.OS === 'android' ? 92 : 112,
+            height: Platform.OS === 'android' ? 108 : undefined,
+            minHeight: Platform.OS === 'android' ? undefined : 132,
+            alignSelf: 'flex-start',
             alignItems: 'center',
             justifyContent: 'center',
             borderRadius: 16,
             backgroundColor: colors.backgroundSelected,
         },
         placeholderLogo: {
-            width: 68,
-            height: 68,
+            width: Platform.OS === 'android' ? 30 : 55,
+            height: Platform.OS === 'android' ? 30 : 55,
         },
 
         articleContent: {
@@ -306,17 +317,17 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
         },
         articleTitle: {
             color: colors.text,
-            fontSize: 17,
+            fontSize: Platform.OS === 'android' ? 14 : 17,
             fontWeight: '800',
-            lineHeight: 26,
+            lineHeight: Platform.OS === 'android' ? 20 : 26,
             textAlign: 'right',
             writingDirection: 'rtl',
         },
         articleSummary: {
             marginTop: Spacing.two,
             color: colors.textSecondary,
-            fontSize: 13,
-            lineHeight: 21,
+            fontSize: Platform.OS === 'android' ? 12 : 13,
+            lineHeight: Platform.OS === 'android' ? 18 : 21,
             textAlign: 'right',
             writingDirection: 'rtl',
         },

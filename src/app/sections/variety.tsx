@@ -3,6 +3,7 @@ import { Link } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import type { ComponentProps } from 'react';
 import {
+    Platform,
     Pressable,
     ScrollView,
     StyleSheet,
@@ -181,7 +182,7 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
         title: {
             marginTop: Spacing.one,
             color: colors.accent,
-            fontSize: 30,
+            fontSize: Platform.OS === 'android' ? 23 : 29,
             fontWeight: '800',
             textAlign: 'right',
             writingDirection: 'rtl',

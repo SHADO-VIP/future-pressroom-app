@@ -32,7 +32,7 @@ type LoadResult = {
 };
 
 function formatPublishedDate(value: string) {
-    return new Date(value).toLocaleDateString('ar-AE', {
+    return new Date(value).toLocaleDateString('ar-AE-u-nu-latn', {
         day: 'numeric',
         month: 'long',
         year: 'numeric',

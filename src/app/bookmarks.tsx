@@ -5,6 +5,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useCallback, useState } from 'react';
 import {
     ActivityIndicator,
+    Platform,
     Pressable,
     ScrollView,
     StyleSheet,
@@ -22,11 +23,17 @@ import {
 } from '@/services/bookmarks';
 
 function formatPublishedDate(value: string) {
-    return new Date(value).toLocaleDateString('ar-AE', {
-        day: 'numeric',
-        month: 'short',
-        year: 'numeric',
-    });
+  const formattedDate = new Date(value).toLocaleDateString('ar-AE', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+
+  const arabicDigits = '٠١٢٣٤٥٦٧٨٩';
+
+  return formattedDate.replace(/[٠-٩]/gu, (digit) =>
+    String(arabicDigits.indexOf(digit)),
+  );
 }
 
 export default function BookmarksScreen() {
@@ -87,10 +94,10 @@ export default function BookmarksScreen() {
                     contentContainerStyle={styles.content}
                     showsVerticalScrollIndicator={false}>
                     <View style={styles.header}>
-                        <Text style={styles.eyebrow}>للقراءة لاحقًا</Text>
+                        <Text style={styles.eyebrow}>للقراءة لاحقاً</Text>
                         <Text style={styles.title}>المحفوظات</Text>
                         <Text style={styles.subtitle}>
-                            المقالات التي حفظتها للعودة إليها في أي وقت.
+                            المقالات التي حفظتها للعودة إليها في أي وقت
                         </Text>
                     </View>
 
@@ -121,7 +128,7 @@ export default function BookmarksScreen() {
                                 لا توجد مقالات محفوظة
                             </Text>
                             <Text style={styles.messageText}>
-                                افتح أي مقال واضغط «حفظ» ليظهر هنا.
+                                افتح أي مقال واضغط حفظ ليظهر هنا
                             </Text>
                         </View>
                     ) : (
@@ -232,7 +239,7 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
         title: {
             marginTop: Spacing.one,
             color: colors.accent,
-            fontSize: 30,
+          fontSize: Platform.OS === 'android' ? 23 : 30,
             fontWeight: '800',
             textAlign: 'right',
             writingDirection: 'rtl',

@@ -3,7 +3,7 @@ import { BottomTabInset, Colors, Spacing } from '@/constants/theme';
 import { Image } from 'expo-image';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useState } from 'react';
-import { RefreshControl, ScrollView, StyleSheet, Text, View, useColorScheme } from 'react-native';
+import { Platform, RefreshControl, ScrollView, StyleSheet, Text, View, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 
@@ -116,14 +116,14 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
     },
     brandName: {
       color: colors.text,
-      fontSize: 17,
+      fontSize: Platform.OS === 'android' ? 10 : 12,
       fontWeight: '800',
       textAlign: 'right',
     },
     brandTagline: {
       marginTop: 2,
       color: colors.textSecondary,
-      fontSize: 12,
+      fontSize: Platform.OS === 'android' ? 9 : 11,
       textAlign: 'right',
       writingDirection: 'rtl',
     },

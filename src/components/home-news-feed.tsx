@@ -3,6 +3,7 @@ import { Link } from 'expo-router';
 import { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
+    Platform,
     Pressable,
     StyleSheet,
     Text,
@@ -28,11 +29,17 @@ type HomeNewsFeedProps = {
     onRefreshComplete?: () => void;
 };
 function formatPublishedDate(value: string) {
-    return new Date(value).toLocaleDateString('ar-AE', {
+    const formattedDate = new Date(value).toLocaleDateString('ar-AE', {
         day: 'numeric',
         month: 'short',
         year: 'numeric',
     });
+
+    const arabicDigits = '٠١٢٣٤٥٦٧٨٩';
+
+    return formattedDate.replace(/[٠-٩]/gu, (digit) =>
+        String(arabicDigits.indexOf(digit)),
+    );
 }
 function formatBreakingHeadline(value: string) {
     return value.replace(/^عاجل\s*[|:،-]?\s*/u, '').trim();
@@ -262,7 +269,9 @@ export function HomeNewsFeed({
                                     {article.newsItem.category.nameAr}
                                 </Text>
 
-                                <Text numberOfLines={3} style={styles.articleTitle}>
+                                <Text
+                                    numberOfLines={Platform.OS === 'android' ? 2 : 3}
+                                    style={styles.articleTitle}>
                                     {article.finalDraft.titleAr}
                                 </Text>
 
@@ -325,7 +334,7 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
         },
         sectionTitle: {
             color: colors.text,
-            fontSize: 24,
+            fontSize: Platform.OS === 'android' ? 20 : 24,
             fontWeight: '800',
             textAlign: 'right',
             writingDirection: 'rtl',
@@ -344,7 +353,7 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
             backgroundColor: colors.backgroundElement,
         },
         heroImageContainer: {
-            height: 210,
+            height: Platform.OS === 'android' ? 165 : 210,
             backgroundColor: colors.primary,
         },
         heroImage: {
@@ -378,7 +387,7 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
         },
         heroContent: {
             alignItems: 'flex-end',
-            padding: Spacing.three,
+            padding: Platform.OS === 'android' ? Spacing.two : Spacing.three,
         },
         heroCategory: {
             color: colors.accent,
@@ -389,17 +398,17 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
         heroTitle: {
             marginTop: Spacing.two,
             color: colors.text,
-            fontSize: 22,
+            fontSize: Platform.OS === 'android' ? 15 : 19,
             fontWeight: '800',
-            lineHeight: 34,
+            lineHeight: Platform.OS === 'android' ? 25 : 31,
             textAlign: 'right',
             writingDirection: 'rtl',
         },
         heroSummary: {
             marginTop: Spacing.two,
             color: colors.textSecondary,
-            fontSize: 15,
-            lineHeight: 25,
+            fontSize: Platform.OS === 'android' ? 12 : 14,
+            lineHeight: Platform.OS === 'android' ? 15 : 20,
             textAlign: 'right',
             writingDirection: 'rtl',
         },
@@ -410,7 +419,7 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
         },
         latestTitle: {
             color: colors.text,
-            fontSize: 21,
+            fontSize: Platform.OS === 'android' ? 18 : 21,
             fontWeight: '800',
             textAlign: 'right',
             writingDirection: 'rtl',
@@ -426,8 +435,10 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
             borderBottomColor: colors.border,
         },
         articleThumbnail: {
-            width: 92,
-            minHeight: 100,
+            width: Platform.OS === 'android' ? 84 : 92,
+            aspectRatio: Platform.OS === 'android' ? 0.9 : undefined,
+            minHeight: Platform.OS === 'android' ? undefined : 100,
+            alignSelf: 'flex-start',
             borderRadius: 16,
             backgroundColor: colors.primary,
         },
@@ -457,9 +468,9 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
         articleTitle: {
             marginTop: 5,
             color: colors.text,
-            fontSize: 16,
+            fontSize: Platform.OS === 'android' ? 14 : 16,
             fontWeight: '700',
-            lineHeight: 25,
+            lineHeight: Platform.OS === 'android' ? 20 : 25,
             textAlign: 'right',
             writingDirection: 'rtl',
         },
