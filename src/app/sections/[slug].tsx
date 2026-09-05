@@ -1,19 +1,19 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import type { ComponentProps } from 'react';
+import { type ComponentProps } from 'react';
 import {
     Pressable,
     ScrollView,
     StyleSheet,
     Text,
     View,
-    useColorScheme,
+    useColorScheme
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { CategoryArticleList } from '@/components/category-article-list';
 import { BottomTabInset, Colors, Spacing } from '@/constants/theme';
-
 type IconName = ComponentProps<typeof Ionicons>['name'];
 
 type CategoryDetails = {
@@ -153,7 +153,7 @@ export default function CategoryScreen() {
                         </Pressable>
                     </View>
 
-                    {category ? (
+                    {category && requestedSlug ? (
                         <>
                             <View style={styles.categoryIntro}>
                                 <View
@@ -176,18 +176,7 @@ export default function CategoryScreen() {
                             <View style={styles.divider} />
 
                             <Text style={styles.sectionTitle}>أحدث الأخبار</Text>
-
-                            <View style={styles.emptyCard}>
-                                <Ionicons
-                                    color={colors.accent}
-                                    name="newspaper-outline"
-                                    size={32}
-                                />
-                                <Text style={styles.emptyTitle}>لا توجد مواد منشورة بعد</Text>
-                                <Text style={styles.emptyDescription}>
-                                    ستظهر أحدث مواد هذا القسم هنا فور توفرها.
-                                </Text>
-                            </View>
+                            <CategoryArticleList category={requestedSlug} />
                         </>
                     ) : (
                         <View style={styles.emptyCard}>

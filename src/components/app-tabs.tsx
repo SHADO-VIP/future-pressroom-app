@@ -51,6 +51,12 @@ export default function AppTabs() {
           ),
         }}
       />
+      <Tabs.Screen
+  name="articles/[slug]"
+  options={{
+    href: null,
+  }}
+/>
     </Tabs>
   );
 }
