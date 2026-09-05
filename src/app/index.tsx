@@ -1,29 +1,9 @@
+import { HomeNewsFeed } from '@/components/home-news-feed';
+import { BottomTabInset, Colors, Spacing } from '@/constants/theme';
 import { StatusBar } from 'expo-status-bar';
 import { ScrollView, StyleSheet, Text, View, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { BottomTabInset, Colors, Spacing } from '@/constants/theme';
-
-const latestArticles = [
-  {
-    id: '1',
-    category: 'سياسة',
-    title: 'تطورات سياسية متسارعة تعيد رسم أولويات المرحلة المقبلة',
-    time: 'منذ 12 دقيقة',
-  },
-  {
-    id: '2',
-    category: 'اقتصاد',
-    title: 'الأسواق تترقب مؤشرات جديدة وسط تحولات اقتصادية عالمية',
-    time: 'منذ 35 دقيقة',
-  },
-  {
-    id: '3',
-    category: 'تكنولوجيا وذكاء اصطناعي',
-    title: 'أدوات الذكاء الاصطناعي تغيّر أساليب العمل داخل غرف الأخبار',
-    time: 'منذ ساعة',
-  },
-];
 
 export default function HomeScreen() {
   const colorScheme = useColorScheme();
@@ -54,59 +34,9 @@ export default function HomeScreen() {
               <Text style={styles.smartBadgeText}>تغطية ذكية</Text>
             </View>
           </View>
-
           <View style={styles.divider} />
 
-          <View style={styles.sectionHeading}>
-            <Text style={styles.sectionTitle}>أبرز الأخبار</Text>
-            <Text style={styles.sectionLabel}>الرئيسية</Text>
-          </View>
-
-          <View style={styles.heroCard}>
-            <View style={styles.heroImage}>
-              <View style={styles.breakingBadge}>
-                <Text style={styles.breakingText}>عاجل</Text>
-              </View>
-
-              <Text style={styles.heroImageText}>FUTURE PRESSROOM</Text>
-            </View>
-
-            <View style={styles.heroContent}>
-              <Text style={styles.heroCategory}>المشهد العربي والعالمي</Text>
-
-              <Text style={styles.heroTitle}>
-                مستجدات محلية ودولية تتصدر المشهد الإخباري اليوم
-              </Text>
-
-              <Text style={styles.heroSummary}>
-                قراءة موجزة لأهم التطورات، مع سياق واضح ومعلومات موثقة تساعد القارئ
-                على فهم ما يحدث.
-              </Text>
-
-              <Text style={styles.heroTime}>آخر تحديث: منذ 5 دقائق</Text>
-            </View>
-          </View>
-
-          <View style={styles.latestHeader}>
-            <Text style={styles.latestTitle}>أحدث الأخبار</Text>
-            <Text style={styles.viewAll}>عرض الكل</Text>
-          </View>
-
-          <View style={styles.articleList}>
-            {latestArticles.map((article) => (
-              <View key={article.id} style={styles.articleCard}>
-                <View style={styles.articleThumbnail}>
-                  <Text style={styles.thumbnailLetter}>F</Text>
-                </View>
-
-                <View style={styles.articleContent}>
-                  <Text style={styles.articleCategory}>{article.category}</Text>
-                  <Text style={styles.articleTitle}>{article.title}</Text>
-                  <Text style={styles.articleTime}>{article.time}</Text>
-                </View>
-              </View>
-            ))}
-          </View>
+          <HomeNewsFeed />
         </ScrollView>
       </SafeAreaView>
     </View>

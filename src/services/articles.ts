@@ -48,7 +48,7 @@ type ArticlesResponse = {
 };
 
 type GetPublishedArticlesOptions = {
-  category: string;
+  category?: string;
   page?: number;
   limit?: number;
   signal?: AbortSignal;
@@ -66,11 +66,14 @@ export async function getPublishedArticles({
     throw new Error('EXPO_PUBLIC_API_URL is not configured.');
   }
 
-  const query = new URLSearchParams({
-    category,
-    page: String(page),
-    limit: String(limit),
-  });
+ const query = new URLSearchParams({
+  page: String(page),
+  limit: String(limit),
+});
+
+if (category) {
+  query.set('category', category);
+}
 
   const response = await fetch(`${API_BASE_URL}/articles?${query.toString()}`, {
     signal,

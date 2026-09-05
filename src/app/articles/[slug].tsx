@@ -47,9 +47,10 @@ function convertHtmlToText(value: string) {
 }
 
 export default function ArticleScreen() {
-  const { slug, category } = useLocalSearchParams<{
+  const { slug, category, from } = useLocalSearchParams<{
   slug: string | string[];
   category?: string | string[];
+  from?: string | string[];
 }>();
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme === 'dark' ? 'dark' : 'light'];
@@ -58,6 +59,7 @@ export default function ArticleScreen() {
   const requestedCategory = Array.isArray(category)
   ? category[0]
   : category;
+  const requestedFrom = Array.isArray(from) ? from[0] : from;
   const [result, setResult] = useState<LoadResult | null>(null);
 
   useEffect(() => {
@@ -108,6 +110,11 @@ export default function ArticleScreen() {
               accessibilityLabel="العودة إلى الأخبار"
               accessibilityRole="button"
               onPress={() => {
+  if (requestedFrom === 'home') {
+    router.replace('/');
+    return;
+  }
+
   if (requestedCategory) {
     router.replace({
       pathname: '/sections/[slug]',
