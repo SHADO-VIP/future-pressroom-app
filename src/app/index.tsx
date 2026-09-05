@@ -1,5 +1,6 @@
 import { HomeNewsFeed } from '@/components/home-news-feed';
 import { BottomTabInset, Colors, Spacing } from '@/constants/theme';
+import { Image } from 'expo-image';
 import { StatusBar } from 'expo-status-bar';
 import { useCallback, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, Text, View, useColorScheme } from 'react-native';
@@ -40,7 +41,11 @@ export default function HomeScreen() {
           <View style={styles.header}>
             <View style={styles.brand}>
               <View style={styles.brandMark}>
-                <Text style={styles.brandMarkText}>F</Text>
+                <Image
+                  contentFit="contain"
+                  source={require('../../assets/images/brand/future-pressroom-icon.png')}
+                  style={styles.brandMarkImage}
+                />
               </View>
 
               <View style={styles.brandCopy}>
@@ -101,10 +106,9 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
       borderWidth: 1,
       borderColor: colors.accent,
     },
-    brandMarkText: {
-      color: colors.accent,
-      fontSize: 22,
-      fontWeight: '800',
+    brandMarkImage: {
+      width: '100%',
+      height: '100%',
     },
     brandCopy: {
       flex: 1,
@@ -264,11 +268,7 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
       borderRadius: 16,
       backgroundColor: colors.primary,
     },
-    thumbnailLetter: {
-      color: colors.accent,
-      fontSize: 28,
-      fontWeight: '800',
-    },
+
     articleContent: {
       flex: 1,
       alignItems: 'flex-end',

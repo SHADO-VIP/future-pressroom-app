@@ -198,7 +198,12 @@ export function CategoryArticleList({
                             />
                         ) : (
                             <View style={styles.imagePlaceholder}>
-                                <Text style={styles.placeholderLetter}>F</Text>
+                                <Image
+                                    accessibilityLabel="شعار Future Pressroom AI"
+                                    contentFit="contain"
+                                    source={require('../../assets/images/brand/future-pressroom-icon.png')}
+                                    style={styles.placeholderLogo}
+                                />
                             </View>
                         )}
 
@@ -290,11 +295,11 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
             borderRadius: 16,
             backgroundColor: colors.backgroundSelected,
         },
-        placeholderLetter: {
-            color: colors.accent,
-            fontSize: 36,
-            fontWeight: '800',
+        placeholderLogo: {
+            width: 68,
+            height: 68,
         },
+
         articleContent: {
             flex: 1,
             alignItems: 'flex-end',

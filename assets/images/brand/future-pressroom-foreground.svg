@@ -1,0 +1,21 @@
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 64 64"
+  role="img"
+  aria-label="Future Pressroom AI"
+>
+
+  <g
+    fill="none"
+    stroke="#b88a35"
+    stroke-width="4"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M32 10 46 31 38 48H26L18 31Z" />
+    <path d="M32 35V48" />
+    <path d="M23 55H41" />
+  </g>
+
+  <circle cx="32" cy="31" r="4" fill="#b88a35" />
+</svg>

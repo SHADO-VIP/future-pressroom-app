@@ -186,9 +186,12 @@ export function HomeNewsFeed({
                             />
                         ) : (
                             <View style={styles.heroPlaceholder}>
-                                <Text style={styles.heroPlaceholderText}>
-                                    FUTURE PRESSROOM
-                                </Text>
+                                <Image
+                                    accessibilityLabel="شعار Future Pressroom AI"
+                                    contentFit="contain"
+                                    source={require('../../assets/images/brand/future-pressroom-icon.png')}
+                                    style={styles.heroPlaceholderLogo}
+                                />
                             </View>
                         )}
 
@@ -245,7 +248,12 @@ export function HomeNewsFeed({
                                 />
                             ) : (
                                 <View style={styles.articlePlaceholder}>
-                                    <Text style={styles.thumbnailLetter}>F</Text>
+                                    <Image
+                                        accessibilityLabel="شعار Future Pressroom AI"
+                                        contentFit="contain"
+                                        source={require('../../assets/images/brand/future-pressroom-icon.png')}
+                                        style={styles.articlePlaceholderLogo}
+                                    />
                                 </View>
                             )}
 
@@ -348,11 +356,10 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
             alignItems: 'center',
             justifyContent: 'center',
         },
-        heroPlaceholderText: {
-            color: colors.accent,
-            fontSize: 14,
-            fontWeight: '800',
-            letterSpacing: 1.5,
+
+        heroPlaceholderLogo: {
+            width: 120,
+            height: 120,
         },
         breakingBadge: {
             position: 'absolute',
@@ -432,11 +439,11 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
             borderRadius: 16,
             backgroundColor: colors.primary,
         },
-        thumbnailLetter: {
-            color: colors.accent,
-            fontSize: 28,
-            fontWeight: '800',
+        articlePlaceholderLogo: {
+            width: 58,
+            height: 58,
         },
+
         articleContent: {
             flex: 1,
             alignItems: 'flex-end',

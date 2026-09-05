@@ -4,18 +4,16 @@
     "slug": "future-pressroom-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/brand/future-pressroom-icon.png",
     "scheme": "futurepressroommobile",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "icon": "./assets/expo.icon"
+      "icon": "./assets/images/brand/future-pressroom-icon.png"
     },
     "android": {
       "adaptiveIcon": {
-        "backgroundColor": "#E6F4FE",
-        "foregroundImage": "./assets/images/android-icon-foreground.png",
-        "backgroundImage": "./assets/images/android-icon-background.png",
-        "monochromeImage": "./assets/images/android-icon-monochrome.png"
+        "backgroundColor": "#07162D",
+        "foregroundImage": "./assets/images/brand/future-pressroom-foreground.png"
       },
       "predictiveBackGestureEnabled": false
     },
@@ -28,9 +26,9 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#208AEF",
-          "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "backgroundColor": "#07162D",
+          "image": "./assets/images/brand/future-pressroom-icon.png",
+          "imageWidth": 140
         }
       ],
       "expo-asset"

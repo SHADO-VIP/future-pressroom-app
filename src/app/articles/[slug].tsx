@@ -315,19 +315,8 @@ function ArticleContent({
                 />
             ) : null}
 
-            {article.selectedImage?.caption ? (
-                <Text style={styles.caption}>
-                    {article.selectedImage.caption}
-                </Text>
-            ) : null}
 
             <Text style={styles.summary}>{article.finalDraft.summaryAr}</Text>
-
-            {article.finalDraft.sourceCredit ? (
-                <Text style={styles.sourceCredit}>
-                    المصدر: {article.finalDraft.sourceCredit}
-                </Text>
-            ) : null}
 
             {article.finalDraft.keyPoints.length > 0 ? (
                 <View style={styles.keyPoints}>
@@ -353,6 +342,11 @@ function ArticleContent({
                         {convertHtmlToText(article.finalDraft.analysisAr)}
                     </Text>
                 </View>
+            ) : null}
+            {article.finalDraft.sourceCredit ? (
+                <Text style={styles.sourceCredit}>
+                    المصدر: {article.finalDraft.sourceCredit}
+                </Text>
             ) : null}
         </View>
     );
@@ -440,9 +434,9 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
         title: {
             marginTop: Spacing.two,
             color: colors.text,
-            fontSize: 30,
+            fontSize: 26,
             fontWeight: '800',
-            lineHeight: 44,
+            lineHeight: 38,
             textAlign: 'right',
             writingDirection: 'rtl',
         },
@@ -497,25 +491,18 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
         },
         image: {
             width: '100%',
-            aspectRatio: 16 / 9,
+            aspectRatio: 4 / 3,
             marginTop: Spacing.four,
             borderRadius: 20,
             backgroundColor: colors.backgroundElement,
         },
-        caption: {
-            marginTop: Spacing.two,
-            color: colors.textSecondary,
-            fontSize: 11,
-            lineHeight: 18,
-            textAlign: 'right',
-            writingDirection: 'rtl',
-        },
+
         summary: {
             marginTop: Spacing.four,
             color: colors.text,
             fontSize: 18,
-            fontWeight: '700',
-            lineHeight: 31,
+            fontWeight: '600',
+            lineHeight: 29,
             textAlign: 'right',
             writingDirection: 'rtl',
         },
