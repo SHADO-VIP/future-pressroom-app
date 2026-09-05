@@ -52,11 +52,15 @@ export default function AppTabs() {
         }}
       />
       <Tabs.Screen
-  name="articles/[slug]"
-  options={{
-    href: null,
-  }}
-/>
+        name="articles/[slug]"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="search"
+        options={{ href: null }}
+      />
     </Tabs>
   );
 }

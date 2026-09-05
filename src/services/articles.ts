@@ -49,6 +49,7 @@ type ArticlesResponse = {
 
 type GetPublishedArticlesOptions = {
     category?: string;
+    search?: string;
     page?: number;
     limit?: number;
     signal?: AbortSignal;
@@ -58,6 +59,7 @@ const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL?.replace(/\/+$/u, '');
 
 export async function getPublishedArticles({
     category,
+    search,
     page = 1,
     limit = 20,
     signal,
@@ -74,7 +76,9 @@ export async function getPublishedArticles({
     if (category) {
         query.set('category', category);
     }
-
+    if (search?.trim()) {
+        query.set('search', search.trim());
+    }
     const response = await fetch(`${API_BASE_URL}/articles?${query.toString()}`, {
         signal,
     });

@@ -116,7 +116,15 @@ export default function SectionsScreen() {
               اختر المجال الذي تريد متابعته واطّلع على أحدث الأخبار والتحليلات
             </Text>
           </View>
-
+          <Link href="/search" asChild>
+            <Pressable
+              accessibilityLabel="البحث في الأخبار"
+              accessibilityRole="button"
+              style={styles.searchButton}>
+              <Ionicons color={colors.accent} name="search" size={22} />
+              <Text style={styles.searchButtonText}>ابحث في الأخبار</Text>
+            </Pressable>
+          </Link>
           <View style={styles.featured}>
             <View style={styles.featuredIcon}>
               <Ionicons color={colors.accent} name="sparkles" size={28} />
@@ -210,6 +218,27 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
       color: colors.textSecondary,
       fontSize: 15,
       lineHeight: 25,
+      textAlign: 'right',
+      writingDirection: 'rtl',
+    },
+    searchButton: {
+      minHeight: 52,
+      flexDirection: 'row-reverse',
+      alignItems: 'center',
+      justifyContent: 'center',
+      gap: Spacing.two,
+      marginTop: Spacing.three,
+      paddingHorizontal: Spacing.three,
+      borderWidth: 1,
+      borderColor: colors.border,
+      borderRadius: 16,
+      backgroundColor: colors.backgroundElement,
+    },
+
+    searchButtonText: {
+      color: colors.text,
+      fontSize: 15,
+      fontWeight: '700',
       textAlign: 'right',
       writingDirection: 'rtl',
     },

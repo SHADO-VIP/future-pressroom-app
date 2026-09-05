@@ -21,399 +21,408 @@ import {
 } from '@/services/articles';
 
 type LoadResult = {
-  slug: string;
-  article: PublishedArticle | null;
-  failed: boolean;
+    slug: string;
+    article: PublishedArticle | null;
+    failed: boolean;
 };
 
 function formatPublishedDate(value: string) {
-  return new Date(value).toLocaleDateString('ar-AE', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  });
+    return new Date(value).toLocaleDateString('ar-AE', {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+    });
 }
 
 function convertHtmlToText(value: string) {
-  return value
-    .replace(/<\/p>/gu, '\n\n')
-    .replace(/<br\s*\/?>/gu, '\n')
-    .replace(/<[^>]+>/gu, '')
-    .replace(/&nbsp;/gu, ' ')
-    .replace(/&quot;/gu, '"')
-    .replace(/&#39;/gu, "'")
-    .replace(/&amp;/gu, '&')
-    .trim();
+    return value
+        .replace(/<\/p>/gu, '\n\n')
+        .replace(/<br\s*\/?>/gu, '\n')
+        .replace(/<[^>]+>/gu, '')
+        .replace(/&nbsp;/gu, ' ')
+        .replace(/&quot;/gu, '"')
+        .replace(/&#39;/gu, "'")
+        .replace(/&amp;/gu, '&')
+        .trim();
 }
 
 export default function ArticleScreen() {
-  const { slug, category, from } = useLocalSearchParams<{
-  slug: string | string[];
-  category?: string | string[];
-  from?: string | string[];
-}>();
-  const colorScheme = useColorScheme();
-  const colors = Colors[colorScheme === 'dark' ? 'dark' : 'light'];
-  const styles = createStyles(colors);
-  const requestedSlug = Array.isArray(slug) ? slug[0] : slug;
-  const requestedCategory = Array.isArray(category)
-  ? category[0]
-  : category;
-  const requestedFrom = Array.isArray(from) ? from[0] : from;
-  const [result, setResult] = useState<LoadResult | null>(null);
+    const { slug, category, from, search } = useLocalSearchParams<{
+        slug: string | string[];
+        category?: string | string[];
+        from?: string | string[];
+        search?: string | string[];
+    }>();
+    const colorScheme = useColorScheme();
+    const colors = Colors[colorScheme === 'dark' ? 'dark' : 'light'];
+    const styles = createStyles(colors);
+    const requestedSlug = Array.isArray(slug) ? slug[0] : slug;
+    const requestedCategory = Array.isArray(category)
+        ? category[0]
+        : category;
+    const requestedFrom = Array.isArray(from) ? from[0] : from;
+    const requestedSearch = Array.isArray(search) ? search[0] : search;
+    const [result, setResult] = useState<LoadResult | null>(null);
 
-  useEffect(() => {
-    if (!requestedSlug) {
-      return;
-    }
-
-    const controller = new AbortController();
-
-    getPublishedArticle(requestedSlug, controller.signal)
-      .then((article) => {
-        setResult({
-          slug: requestedSlug,
-          article,
-          failed: false,
-        });
-      })
-      .catch((error: unknown) => {
-        if (error instanceof Error && error.name === 'AbortError') {
-          return;
+    useEffect(() => {
+        if (!requestedSlug) {
+            return;
         }
 
-        setResult({
-          slug: requestedSlug,
-          article: null,
-          failed: true,
-        });
-      });
+        const controller = new AbortController();
 
-    return () => controller.abort();
-  }, [requestedSlug]);
+        getPublishedArticle(requestedSlug, controller.signal)
+            .then((article) => {
+                setResult({
+                    slug: requestedSlug,
+                    article,
+                    failed: false,
+                });
+            })
+            .catch((error: unknown) => {
+                if (error instanceof Error && error.name === 'AbortError') {
+                    return;
+                }
 
-  const currentResult =
-    result?.slug === requestedSlug ? result : null;
+                setResult({
+                    slug: requestedSlug,
+                    article: null,
+                    failed: true,
+                });
+            });
 
-  return (
-    <View style={styles.screen}>
-      <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
+        return () => controller.abort();
+    }, [requestedSlug]);
 
-      <SafeAreaView style={styles.safeArea} edges={['top']}>
-        <ScrollView
-          contentContainerStyle={styles.content}
-          showsVerticalScrollIndicator={false}>
-          <View style={styles.topBar}>
-            <Text style={styles.brand}>Future Pressroom AI</Text>
+    const currentResult =
+        result?.slug === requestedSlug ? result : null;
 
-            <Pressable
-              accessibilityLabel="العودة إلى الأخبار"
-              accessibilityRole="button"
-              onPress={() => {
-  if (requestedFrom === 'home') {
-    router.replace('/');
-    return;
-  }
+    return (
+        <View style={styles.screen}>
+            <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
 
-  if (requestedCategory) {
-    router.replace({
-      pathname: '/sections/[slug]',
-      params: { slug: requestedCategory },
-    });
-    return;
-  }
+            <SafeAreaView style={styles.safeArea} edges={['top']}>
+                <ScrollView
+                    contentContainerStyle={styles.content}
+                    showsVerticalScrollIndicator={false}>
+                    <View style={styles.topBar}>
+                        <Text style={styles.brand}>Future Pressroom AI</Text>
 
-  router.replace('/sections');
-}}
-              style={({ pressed }) => [
-                styles.backButton,
-                pressed && styles.pressed,
-              ]}>
-              <Ionicons
-                color={colors.accent}
-                name="arrow-forward"
-                size={24}
-              />
-            </Pressable>
-          </View>
+                        <Pressable
+                            accessibilityLabel="العودة إلى الأخبار"
+                            accessibilityRole="button"
+                            onPress={() => {
+                                if (requestedFrom === 'search') {
+                                    router.replace({
+                                        pathname: '/search',
+                                        params: requestedSearch ? { q: requestedSearch } : {},
+                                    });
+                                    return;
+                                }
+                                if (requestedFrom === 'home') {
+                                    router.replace('/');
+                                    return;
+                                }
 
-          {!currentResult ? (
-            <View style={styles.messageCard}>
-              <ActivityIndicator color={colors.accent} size="large" />
-              <Text style={styles.messageText}>جارٍ تحميل المقال...</Text>
-            </View>
-          ) : currentResult.failed || !currentResult.article ? (
-            <View style={styles.messageCard}>
-              <Ionicons
-                color={colors.breaking}
-                name="alert-circle-outline"
-                size={34}
-              />
-              <Text style={styles.errorTitle}>تعذر تحميل المقال</Text>
-              <Text style={styles.messageText}>
-                تحقق من اتصال الهاتف والخادم ثم أعد المحاولة.
-              </Text>
-            </View>
-          ) : (
-            <ArticleContent
-              article={currentResult.article}
-              styles={styles}
-            />
-          )}
-        </ScrollView>
-      </SafeAreaView>
-    </View>
-  );
+                                if (requestedCategory) {
+                                    router.replace({
+                                        pathname: '/sections/[slug]',
+                                        params: { slug: requestedCategory },
+                                    });
+                                    return;
+                                }
+
+                                router.replace('/sections');
+                            }}
+                            style={({ pressed }) => [
+                                styles.backButton,
+                                pressed && styles.pressed,
+                            ]}>
+                            <Ionicons
+                                color={colors.accent}
+                                name="arrow-forward"
+                                size={24}
+                            />
+                        </Pressable>
+                    </View>
+
+                    {!currentResult ? (
+                        <View style={styles.messageCard}>
+                            <ActivityIndicator color={colors.accent} size="large" />
+                            <Text style={styles.messageText}>جارٍ تحميل المقال...</Text>
+                        </View>
+                    ) : currentResult.failed || !currentResult.article ? (
+                        <View style={styles.messageCard}>
+                            <Ionicons
+                                color={colors.breaking}
+                                name="alert-circle-outline"
+                                size={34}
+                            />
+                            <Text style={styles.errorTitle}>تعذر تحميل المقال</Text>
+                            <Text style={styles.messageText}>
+                                تحقق من اتصال الهاتف والخادم ثم أعد المحاولة.
+                            </Text>
+                        </View>
+                    ) : (
+                        <ArticleContent
+                            article={currentResult.article}
+                            styles={styles}
+                        />
+                    )}
+                </ScrollView>
+            </SafeAreaView>
+        </View>
+    );
 }
 
 type ArticleContentProps = {
-  article: PublishedArticle;
-  styles: ReturnType<typeof createStyles>;
+    article: PublishedArticle;
+    styles: ReturnType<typeof createStyles>;
 };
 
 function ArticleContent({ article, styles }: ArticleContentProps) {
-  return (
-    <View style={styles.article}>
-      <Text style={styles.category}>
-        {article.newsItem.category.nameAr}
-      </Text>
+    return (
+        <View style={styles.article}>
+            <Text style={styles.category}>
+                {article.newsItem.category.nameAr}
+            </Text>
 
-      <Text style={styles.title}>{article.finalDraft.titleAr}</Text>
+            <Text style={styles.title}>{article.finalDraft.titleAr}</Text>
 
-      <Text style={styles.date}>
-        {formatPublishedDate(article.publishedAt)}
-      </Text>
+            <Text style={styles.date}>
+                {formatPublishedDate(article.publishedAt)}
+            </Text>
 
-      {article.selectedImage?.imageUrl ? (
-        <Image
-          accessibilityLabel={
-            article.selectedImage.altText ?? article.finalDraft.titleAr
-          }
-          contentFit="cover"
-          source={{ uri: article.selectedImage.imageUrl }}
-          style={styles.image}
-        />
-      ) : null}
+            {article.selectedImage?.imageUrl ? (
+                <Image
+                    accessibilityLabel={
+                        article.selectedImage.altText ?? article.finalDraft.titleAr
+                    }
+                    contentFit="cover"
+                    source={{ uri: article.selectedImage.imageUrl }}
+                    style={styles.image}
+                />
+            ) : null}
 
-      {article.selectedImage?.caption ? (
-        <Text style={styles.caption}>
-          {article.selectedImage.caption}
-        </Text>
-      ) : null}
+            {article.selectedImage?.caption ? (
+                <Text style={styles.caption}>
+                    {article.selectedImage.caption}
+                </Text>
+            ) : null}
 
-      <Text style={styles.summary}>{article.finalDraft.summaryAr}</Text>
+            <Text style={styles.summary}>{article.finalDraft.summaryAr}</Text>
 
-      {article.finalDraft.sourceCredit ? (
-        <Text style={styles.sourceCredit}>
-          المصدر: {article.finalDraft.sourceCredit}
-        </Text>
-      ) : null}
+            {article.finalDraft.sourceCredit ? (
+                <Text style={styles.sourceCredit}>
+                    المصدر: {article.finalDraft.sourceCredit}
+                </Text>
+            ) : null}
 
-      {article.finalDraft.keyPoints.length > 0 ? (
-        <View style={styles.keyPoints}>
-          <Text style={styles.sectionTitle}>أبرز النقاط</Text>
+            {article.finalDraft.keyPoints.length > 0 ? (
+                <View style={styles.keyPoints}>
+                    <Text style={styles.sectionTitle}>أبرز النقاط</Text>
 
-          {article.finalDraft.keyPoints.map((point) => (
-            <View key={point} style={styles.keyPointRow}>
-              <View style={styles.bullet} />
-              <Text style={styles.keyPointText}>{point}</Text>
-            </View>
-          ))}
+                    {article.finalDraft.keyPoints.map((point) => (
+                        <View key={point} style={styles.keyPointRow}>
+                            <View style={styles.bullet} />
+                            <Text style={styles.keyPointText}>{point}</Text>
+                        </View>
+                    ))}
+                </View>
+            ) : null}
+
+            <Text style={styles.body}>
+                {convertHtmlToText(article.finalDraft.contentAr)}
+            </Text>
+
+            {article.finalDraft.analysisAr ? (
+                <View style={styles.analysis}>
+                    <Text style={styles.sectionTitle}>قراءة تحليلية</Text>
+                    <Text style={styles.body}>
+                        {convertHtmlToText(article.finalDraft.analysisAr)}
+                    </Text>
+                </View>
+            ) : null}
         </View>
-      ) : null}
-
-      <Text style={styles.body}>
-        {convertHtmlToText(article.finalDraft.contentAr)}
-      </Text>
-
-      {article.finalDraft.analysisAr ? (
-        <View style={styles.analysis}>
-          <Text style={styles.sectionTitle}>قراءة تحليلية</Text>
-          <Text style={styles.body}>
-            {convertHtmlToText(article.finalDraft.analysisAr)}
-          </Text>
-        </View>
-      ) : null}
-    </View>
-  );
+    );
 }
 
 function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
-  return StyleSheet.create({
-    screen: {
-      flex: 1,
-      backgroundColor: colors.background,
-    },
-    safeArea: {
-      flex: 1,
-    },
-    content: {
-      flexGrow: 1,
-      paddingHorizontal: Spacing.three,
-      paddingTop: Spacing.three,
-      paddingBottom: BottomTabInset + Spacing.five,
-    },
-    topBar: {
-      flexDirection: 'row-reverse',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      gap: Spacing.three,
-      paddingBottom: Spacing.three,
-      borderBottomWidth: 1,
-      borderBottomColor: colors.border,
-    },
-    brand: {
-      color: colors.accent,
-      fontSize: 18,
-      fontWeight: '800',
-    },
-    backButton: {
-      width: 46,
-      height: 46,
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderWidth: 1,
-      borderColor: colors.border,
-      borderRadius: 15,
-      backgroundColor: colors.backgroundElement,
-    },
-    pressed: {
-      opacity: 0.65,
-    },
-    messageCard: {
-      minHeight: 260,
-      alignItems: 'center',
-      justifyContent: 'center',
-      gap: Spacing.two,
-      marginTop: Spacing.four,
-      padding: Spacing.four,
-      borderWidth: 1,
-      borderColor: colors.border,
-      borderRadius: 20,
-      backgroundColor: colors.backgroundElement,
-    },
-    messageText: {
-      color: colors.textSecondary,
-      fontSize: 14,
-      lineHeight: 23,
-      textAlign: 'center',
-      writingDirection: 'rtl',
-    },
-    errorTitle: {
-      color: colors.breaking,
-      fontSize: 18,
-      fontWeight: '800',
-      textAlign: 'center',
-      writingDirection: 'rtl',
-    },
-    article: {
-      alignItems: 'stretch',
-      marginTop: Spacing.four,
-    },
-    category: {
-      color: colors.accent,
-      fontSize: 14,
-      fontWeight: '800',
-      textAlign: 'right',
-      writingDirection: 'rtl',
-    },
-    title: {
-      marginTop: Spacing.two,
-      color: colors.text,
-      fontSize: 30,
-      fontWeight: '800',
-      lineHeight: 44,
-      textAlign: 'right',
-      writingDirection: 'rtl',
-    },
-    date: {
-      marginTop: Spacing.two,
-      color: colors.textSecondary,
-      fontSize: 12,
-      textAlign: 'right',
-      writingDirection: 'rtl',
-    },
-    image: {
-      width: '100%',
-      aspectRatio: 16 / 9,
-      marginTop: Spacing.four,
-      borderRadius: 20,
-      backgroundColor: colors.backgroundElement,
-    },
-    caption: {
-      marginTop: Spacing.two,
-      color: colors.textSecondary,
-      fontSize: 11,
-      lineHeight: 18,
-      textAlign: 'right',
-      writingDirection: 'rtl',
-    },
-    summary: {
-      marginTop: Spacing.four,
-      color: colors.text,
-      fontSize: 18,
-      fontWeight: '700',
-      lineHeight: 31,
-      textAlign: 'right',
-      writingDirection: 'rtl',
-    },
-    sourceCredit: {
-      marginTop: Spacing.three,
-      color: colors.accent,
-      fontSize: 13,
-      fontWeight: '700',
-      textAlign: 'right',
-      writingDirection: 'rtl',
-    },
-    keyPoints: {
-      gap: Spacing.two,
-      marginTop: Spacing.four,
-      padding: Spacing.three,
-      borderWidth: 1,
-      borderColor: colors.border,
-      borderRadius: 20,
-      backgroundColor: colors.backgroundElement,
-    },
-    sectionTitle: {
-      color: colors.accent,
-      fontSize: 20,
-      fontWeight: '800',
-      textAlign: 'right',
-      writingDirection: 'rtl',
-    },
-    keyPointRow: {
-      flexDirection: 'row-reverse',
-      alignItems: 'flex-start',
-      gap: Spacing.two,
-    },
-    bullet: {
-      width: 7,
-      height: 7,
-      marginTop: 9,
-      borderRadius: 4,
-      backgroundColor: colors.accent,
-    },
-    keyPointText: {
-      flex: 1,
-      color: colors.text,
-      fontSize: 15,
-      lineHeight: 25,
-      textAlign: 'right',
-      writingDirection: 'rtl',
-    },
-    body: {
-      marginTop: Spacing.four,
-      color: colors.text,
-      fontSize: 17,
-      lineHeight: 31,
-      textAlign: 'right',
-      writingDirection: 'rtl',
-    },
-    analysis: {
-      marginTop: Spacing.five,
-      paddingTop: Spacing.four,
-      borderTopWidth: 1,
-      borderTopColor: colors.border,
-    },
-  });
+    return StyleSheet.create({
+        screen: {
+            flex: 1,
+            backgroundColor: colors.background,
+        },
+        safeArea: {
+            flex: 1,
+        },
+        content: {
+            flexGrow: 1,
+            paddingHorizontal: Spacing.three,
+            paddingTop: Spacing.three,
+            paddingBottom: BottomTabInset + Spacing.five,
+        },
+        topBar: {
+            flexDirection: 'row-reverse',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            gap: Spacing.three,
+            paddingBottom: Spacing.three,
+            borderBottomWidth: 1,
+            borderBottomColor: colors.border,
+        },
+        brand: {
+            color: colors.accent,
+            fontSize: 18,
+            fontWeight: '800',
+        },
+        backButton: {
+            width: 46,
+            height: 46,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderWidth: 1,
+            borderColor: colors.border,
+            borderRadius: 15,
+            backgroundColor: colors.backgroundElement,
+        },
+        pressed: {
+            opacity: 0.65,
+        },
+        messageCard: {
+            minHeight: 260,
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: Spacing.two,
+            marginTop: Spacing.four,
+            padding: Spacing.four,
+            borderWidth: 1,
+            borderColor: colors.border,
+            borderRadius: 20,
+            backgroundColor: colors.backgroundElement,
+        },
+        messageText: {
+            color: colors.textSecondary,
+            fontSize: 14,
+            lineHeight: 23,
+            textAlign: 'center',
+            writingDirection: 'rtl',
+        },
+        errorTitle: {
+            color: colors.breaking,
+            fontSize: 18,
+            fontWeight: '800',
+            textAlign: 'center',
+            writingDirection: 'rtl',
+        },
+        article: {
+            alignItems: 'stretch',
+            marginTop: Spacing.four,
+        },
+        category: {
+            color: colors.accent,
+            fontSize: 14,
+            fontWeight: '800',
+            textAlign: 'right',
+            writingDirection: 'rtl',
+        },
+        title: {
+            marginTop: Spacing.two,
+            color: colors.text,
+            fontSize: 30,
+            fontWeight: '800',
+            lineHeight: 44,
+            textAlign: 'right',
+            writingDirection: 'rtl',
+        },
+        date: {
+            marginTop: Spacing.two,
+            color: colors.textSecondary,
+            fontSize: 12,
+            textAlign: 'right',
+            writingDirection: 'rtl',
+        },
+        image: {
+            width: '100%',
+            aspectRatio: 16 / 9,
+            marginTop: Spacing.four,
+            borderRadius: 20,
+            backgroundColor: colors.backgroundElement,
+        },
+        caption: {
+            marginTop: Spacing.two,
+            color: colors.textSecondary,
+            fontSize: 11,
+            lineHeight: 18,
+            textAlign: 'right',
+            writingDirection: 'rtl',
+        },
+        summary: {
+            marginTop: Spacing.four,
+            color: colors.text,
+            fontSize: 18,
+            fontWeight: '700',
+            lineHeight: 31,
+            textAlign: 'right',
+            writingDirection: 'rtl',
+        },
+        sourceCredit: {
+            marginTop: Spacing.three,
+            color: colors.accent,
+            fontSize: 13,
+            fontWeight: '700',
+            textAlign: 'right',
+            writingDirection: 'rtl',
+        },
+        keyPoints: {
+            gap: Spacing.two,
+            marginTop: Spacing.four,
+            padding: Spacing.three,
+            borderWidth: 1,
+            borderColor: colors.border,
+            borderRadius: 20,
+            backgroundColor: colors.backgroundElement,
+        },
+        sectionTitle: {
+            color: colors.accent,
+            fontSize: 20,
+            fontWeight: '800',
+            textAlign: 'right',
+            writingDirection: 'rtl',
+        },
+        keyPointRow: {
+            flexDirection: 'row-reverse',
+            alignItems: 'flex-start',
+            gap: Spacing.two,
+        },
+        bullet: {
+            width: 7,
+            height: 7,
+            marginTop: 9,
+            borderRadius: 4,
+            backgroundColor: colors.accent,
+        },
+        keyPointText: {
+            flex: 1,
+            color: colors.text,
+            fontSize: 15,
+            lineHeight: 25,
+            textAlign: 'right',
+            writingDirection: 'rtl',
+        },
+        body: {
+            marginTop: Spacing.four,
+            color: colors.text,
+            fontSize: 17,
+            lineHeight: 31,
+            textAlign: 'right',
+            writingDirection: 'rtl',
+        },
+        analysis: {
+            marginTop: Spacing.five,
+            paddingTop: Spacing.four,
+            borderTopWidth: 1,
+            borderTopColor: colors.border,
+        },
+    });
 }
