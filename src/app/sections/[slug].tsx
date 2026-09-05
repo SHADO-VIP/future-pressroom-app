@@ -1,14 +1,15 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { router, useLocalSearchParams } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { type ComponentProps } from 'react';
+import { useCallback, useState, type ComponentProps } from 'react';
 import {
     Pressable,
+    RefreshControl,
     ScrollView,
     StyleSheet,
     Text,
-    View,
-    useColorScheme
+    useColorScheme,
+    View
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -110,6 +111,17 @@ export default function CategoryScreen() {
     const colorScheme = useColorScheme();
     const colors = Colors[colorScheme === 'dark' ? 'dark' : 'light'];
     const styles = createStyles(colors);
+    const [refreshKey, setRefreshKey] = useState(0);
+    const [isRefreshing, setIsRefreshing] = useState(false);
+
+    const handleRefresh = useCallback(() => {
+        setIsRefreshing(true);
+        setRefreshKey((currentKey) => currentKey + 1);
+    }, []);
+
+    const handleRefreshComplete = useCallback(() => {
+        setIsRefreshing(false);
+    }, []);
 
     const requestedSlug = Array.isArray(slug) ? slug[0] : slug;
     const category =
@@ -124,6 +136,14 @@ export default function CategoryScreen() {
             <SafeAreaView style={styles.safeArea} edges={['top']}>
                 <ScrollView
                     contentContainerStyle={styles.content}
+                    refreshControl={
+                        <RefreshControl
+                            colors={[colors.accent]}
+                            onRefresh={handleRefresh}
+                            refreshing={isRefreshing}
+                            tintColor={colors.accent}
+                        />
+                    }
                     showsVerticalScrollIndicator={false}>
                     <View style={styles.topBar}>
                         <View style={styles.heading}>
@@ -176,7 +196,11 @@ export default function CategoryScreen() {
                             <View style={styles.divider} />
 
                             <Text style={styles.sectionTitle}>أحدث الأخبار</Text>
-                            <CategoryArticleList category={requestedSlug} />
+                            <CategoryArticleList
+                                category={requestedSlug}
+                                onRefreshComplete={handleRefreshComplete}
+                                refreshKey={refreshKey}
+                            />
                         </>
                     ) : (
                         <View style={styles.emptyCard}>
