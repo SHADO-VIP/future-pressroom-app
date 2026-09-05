@@ -1,7 +1,8 @@
 import { HomeNewsFeed } from '@/components/home-news-feed';
 import { BottomTabInset, Colors, Spacing } from '@/constants/theme';
 import { StatusBar } from 'expo-status-bar';
-import { ScrollView, StyleSheet, Text, View, useColorScheme } from 'react-native';
+import { useCallback, useState } from 'react';
+import { RefreshControl, ScrollView, StyleSheet, Text, View, useColorScheme } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 
@@ -9,7 +10,17 @@ export default function HomeScreen() {
   const colorScheme = useColorScheme();
   const colors = Colors[colorScheme === 'dark' ? 'dark' : 'light'];
   const styles = createStyles(colors);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
+  const handleRefresh = useCallback(() => {
+    setIsRefreshing(true);
+    setRefreshKey((currentKey) => currentKey + 1);
+  }, []);
+
+  const handleRefreshComplete = useCallback(() => {
+    setIsRefreshing(false);
+  }, []);
   return (
     <View style={styles.screen}>
       <StatusBar style={colorScheme === 'dark' ? 'light' : 'dark'} />
@@ -17,6 +28,14 @@ export default function HomeScreen() {
       <SafeAreaView style={styles.safeArea} edges={['top']}>
         <ScrollView
           contentContainerStyle={styles.content}
+          refreshControl={
+            <RefreshControl
+              colors={[colors.accent]}
+              onRefresh={handleRefresh}
+              refreshing={isRefreshing}
+              tintColor={colors.accent}
+            />
+          }
           showsVerticalScrollIndicator={false}>
           <View style={styles.header}>
             <View style={styles.brand}>
@@ -36,7 +55,10 @@ export default function HomeScreen() {
           </View>
           <View style={styles.divider} />
 
-          <HomeNewsFeed />
+          <HomeNewsFeed
+            onRefreshComplete={handleRefreshComplete}
+            refreshKey={refreshKey}
+          />
         </ScrollView>
       </SafeAreaView>
     </View>
