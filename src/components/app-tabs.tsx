@@ -52,6 +52,19 @@ export default function AppTabs() {
         }}
       />
       <Tabs.Screen
+        name="bookmarks"
+        options={{
+          title: 'المحفوظات',
+          tabBarIcon: ({ color, focused, size }) => (
+            <Ionicons
+              color={color}
+              name={focused ? 'bookmark' : 'bookmark-outline'}
+              size={size}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="articles/[slug]"
         options={{
           href: null,

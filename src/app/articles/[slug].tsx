@@ -20,6 +20,10 @@ import {
     getPublishedArticle,
     type PublishedArticle,
 } from '@/services/articles';
+import {
+    isArticleBookmarked,
+    toggleArticleBookmark,
+} from '@/services/bookmarks';
 
 type LoadResult = {
     slug: string;
@@ -129,6 +133,10 @@ export default function ArticleScreen() {
                             accessibilityLabel="العودة إلى الأخبار"
                             accessibilityRole="button"
                             onPress={() => {
+                                if (requestedFrom === 'bookmarks') {
+                                    router.replace('/bookmarks');
+                                    return;
+                                }
                                 if (requestedFrom === 'search') {
                                     router.replace({
                                         pathname: '/search',
@@ -182,6 +190,7 @@ export default function ArticleScreen() {
                         </View>
                     ) : (
                         <ArticleContent
+                            accentColor={colors.accent}
                             article={currentResult.article}
                             styles={styles}
                         />
@@ -194,10 +203,53 @@ export default function ArticleScreen() {
 
 type ArticleContentProps = {
     article: PublishedArticle;
+    accentColor: string;
     styles: ReturnType<typeof createStyles>;
 };
 
-function ArticleContent({ article, styles }: ArticleContentProps) {
+function ArticleContent({
+    article,
+    accentColor,
+    styles,
+}: ArticleContentProps) {
+    const [isBookmarked, setIsBookmarked] = useState(false);
+    const [isBookmarkLoading, setIsBookmarkLoading] = useState(true);
+    const articleSlug = article.newsItem.seoMetadata.slug;
+
+    useEffect(() => {
+        let isActive = true;
+
+        isArticleBookmarked(articleSlug)
+            .then((saved) => {
+                if (isActive) {
+                    setIsBookmarked(saved);
+                }
+            })
+            .finally(() => {
+                if (isActive) {
+                    setIsBookmarkLoading(false);
+                }
+            });
+
+        return () => {
+            isActive = false;
+        };
+    }, [articleSlug]);
+
+    async function handleBookmark() {
+        if (isBookmarkLoading) {
+            return;
+        }
+
+        setIsBookmarkLoading(true);
+
+        try {
+            const saved = await toggleArticleBookmark(article);
+            setIsBookmarked(saved);
+        } finally {
+            setIsBookmarkLoading(false);
+        }
+    }
     return (
         <View style={styles.article}>
             <Text style={styles.category}>
@@ -209,19 +261,49 @@ function ArticleContent({ article, styles }: ArticleContentProps) {
             <Text style={styles.date}>
                 {formatPublishedDate(article.publishedAt)}
             </Text>
-            <Pressable
-                accessibilityLabel="مشاركة المقال"
-                accessibilityRole="button"
-                onPress={() => {
-                    void shareArticle(article);
-                }}
-                style={({ pressed }) => [
-                    styles.shareButton,
-                    pressed && styles.pressed,
-                ]}>
-                <Ionicons color="#FFFFFF" name="share-social-outline" size={20} />
-                <Text style={styles.shareButtonText}>مشاركة المقال</Text>
-            </Pressable>
+            <View style={styles.articleActions}>
+                <Pressable
+                    accessibilityLabel="مشاركة المقال"
+                    accessibilityRole="button"
+                    onPress={() => {
+                        void shareArticle(article);
+                    }}
+                    style={({ pressed }) => [
+                        styles.shareButton,
+                        pressed && styles.pressed,
+                    ]}>
+                    <Ionicons color="#FFFFFF" name="share-social-outline" size={20} />
+                    <Text style={styles.shareButtonText}>مشاركة</Text>
+                </Pressable>
+
+                <Pressable
+                    accessibilityLabel={
+                        isBookmarked ? 'إزالة المقال من المحفوظات' : 'حفظ المقال'
+                    }
+                    accessibilityRole="button"
+                    disabled={isBookmarkLoading}
+                    onPress={() => {
+                        void handleBookmark();
+                    }}
+                    style={({ pressed }) => [
+                        styles.bookmarkButton,
+                        pressed && styles.pressed,
+                        isBookmarkLoading && styles.disabledButton,
+                    ]}>
+                    {isBookmarkLoading ? (
+                        <ActivityIndicator color={accentColor} size="small" />
+                    ) : (
+                        <Ionicons
+                            color={accentColor}
+                            name={isBookmarked ? 'bookmark' : 'bookmark-outline'}
+                            size={20}
+                        />
+                    )}
+                    <Text style={styles.bookmarkButtonText}>
+                        {isBookmarked ? 'محفوظ' : 'حفظ'}
+                    </Text>
+                </Pressable>
+            </View>
             {article.selectedImage?.imageUrl ? (
                 <Image
                     accessibilityLabel={
@@ -371,12 +453,37 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
             textAlign: 'right',
             writingDirection: 'rtl',
         },
-        shareButton: {
+        articleActions: {
             alignSelf: 'flex-end',
             flexDirection: 'row-reverse',
             alignItems: 'center',
             gap: Spacing.two,
             marginTop: Spacing.three,
+        },
+        bookmarkButton: {
+            flexDirection: 'row-reverse',
+            alignItems: 'center',
+            gap: Spacing.two,
+            paddingHorizontal: Spacing.three,
+            paddingVertical: Spacing.two,
+            borderWidth: 1,
+            borderColor: colors.accent,
+            borderRadius: 14,
+            backgroundColor: colors.backgroundElement,
+        },
+        bookmarkButtonText: {
+            color: colors.accent,
+            fontSize: 13,
+            fontWeight: '800',
+            writingDirection: 'rtl',
+        },
+        disabledButton: {
+            opacity: 0.55,
+        },
+        shareButton: {
+            flexDirection: 'row-reverse',
+            alignItems: 'center',
+            gap: Spacing.two,
             paddingHorizontal: Spacing.three,
             paddingVertical: Spacing.two,
             borderRadius: 14,
