@@ -12,12 +12,15 @@ import {
 
 import { Colors, Spacing } from '@/constants/theme';
 import {
+    getBreakingHeadlines,
     getPublishedArticles,
+    type BreakingHeadline,
     type PublishedArticle,
 } from '@/services/articles';
 
 type LoadResult = {
     articles: PublishedArticle[];
+    breakingHeadlines: BreakingHeadline[];
     failed: boolean;
 };
 type HomeNewsFeedProps = {
@@ -31,7 +34,9 @@ function formatPublishedDate(value: string) {
         year: 'numeric',
     });
 }
-
+function formatBreakingHeadline(value: string) {
+    return value.replace(/^عاجل\s*[|:،-]?\s*/u, '').trim();
+}
 function createArticleHref(article: PublishedArticle) {
     return {
         pathname: '/articles/[slug]' as const,
@@ -51,18 +56,23 @@ export function HomeNewsFeed({
     const colors = Colors[colorScheme === 'dark' ? 'dark' : 'light'];
     const styles = createStyles(colors);
     const [result, setResult] = useState<LoadResult | null>(null);
-
+    const [breakingIndex, setBreakingIndex] = useState(0);
+    const breakingCount = result?.breakingHeadlines.length ?? 0;
     useEffect(() => {
         let isActive = true;
         const controller = new AbortController();
 
-        getPublishedArticles({
-            limit: 8,
-            signal: controller.signal,
-        })
-            .then(({ articles }) => {
+        Promise.all([
+            getPublishedArticles({
+                limit: 8,
+                signal: controller.signal,
+            }),
+            getBreakingHeadlines(controller.signal),
+        ])
+            .then(([articlesResult, breakingHeadlines]) => {
                 setResult({
-                    articles,
+                    articles: articlesResult.articles,
+                    breakingHeadlines,
                     failed: false,
                 });
             })
@@ -73,6 +83,7 @@ export function HomeNewsFeed({
 
                 setResult({
                     articles: [],
+                    breakingHeadlines: [],
                     failed: true,
                 });
             })
@@ -87,6 +98,19 @@ export function HomeNewsFeed({
             controller.abort();
         };
     }, [onRefreshComplete, refreshKey]);
+    useEffect(() => {
+        if (breakingCount <= 1) {
+            return;
+        }
+
+        const timer = setInterval(() => {
+            setBreakingIndex(
+                (currentIndex) => (currentIndex + 1) % breakingCount,
+            );
+        }, 5000);
+
+        return () => clearInterval(timer);
+    }, [breakingCount]);
     if (!result) {
         return (
             <View style={styles.messageCard}>
@@ -117,9 +141,28 @@ export function HomeNewsFeed({
 
     const featuredArticle = result.articles[0];
     const latestArticles = result.articles.slice(1);
-
+    const breakingHeadline =
+        breakingCount > 0
+            ? result.breakingHeadlines[breakingIndex % breakingCount]
+            : undefined;
     return (
         <>
+            {breakingHeadline ? (
+                <View style={styles.breakingTicker}>
+                    <View style={styles.breakingTickerBadge}>
+                        <Text style={styles.breakingTickerBadgeText}>عاجل</Text>
+                    </View>
+
+                    <Text style={styles.breakingTickerText}>
+                        {formatBreakingHeadline(breakingHeadline.headlineAr)}
+                    </Text>
+                    {breakingCount > 1 ? (
+                        <Text style={styles.breakingCounter}>
+                            {(breakingIndex % breakingCount) + 1}/{breakingCount}
+                        </Text>
+                    ) : null}
+                </View>
+            ) : null}
             <View style={styles.sectionHeading}>
                 <Text style={styles.sectionTitle}>أبرز الأخبار</Text>
                 <Text style={styles.sectionLabel}>الرئيسية</Text>
@@ -229,6 +272,43 @@ export function HomeNewsFeed({
 
 function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
     return StyleSheet.create({
+        breakingTicker: {
+            flexDirection: 'row-reverse',
+            alignItems: 'center',
+            gap: Spacing.two,
+            marginBottom: Spacing.three,
+            padding: Spacing.three,
+            borderWidth: 1,
+            borderColor: colors.breaking,
+            borderRadius: 18,
+            backgroundColor: colors.backgroundElement,
+        },
+        breakingTickerBadge: {
+            paddingHorizontal: 10,
+            paddingVertical: 6,
+            borderRadius: 999,
+            backgroundColor: colors.breaking,
+        },
+        breakingTickerBadgeText: {
+            color: '#FFFFFF',
+            fontSize: 12,
+            fontWeight: '800',
+            writingDirection: 'rtl',
+        },
+        breakingTickerText: {
+            flex: 1,
+            color: colors.text,
+            fontSize: 14,
+            fontWeight: '700',
+            lineHeight: 23,
+            textAlign: 'right',
+            writingDirection: 'rtl',
+        },
+        breakingCounter: {
+            color: colors.textSecondary,
+            fontSize: 11,
+            fontWeight: '700',
+        },
         sectionHeading: {
             flexDirection: 'row-reverse',
             alignItems: 'center',
