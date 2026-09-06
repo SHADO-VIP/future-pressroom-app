@@ -62,18 +62,17 @@ function normalizeArticleImage(article: PublishedArticle) {
     const selectedImage = article.selectedImage;
 const imageUrl = selectedImage?.imageUrl;
 
-    if (
-        Platform.OS !== 'android' ||
-        !imageUrl ||
-        !imageUrl.includes('res.cloudinary.com/') ||
-        !/\.webp(?:\?|$)/iu.test(imageUrl)
-    ) {
-        return article;
-    }
+  if (
+    Platform.OS !== 'android' ||
+    !imageUrl ||
+    !imageUrl.includes('res.cloudinary.com/')
+) {
+    return article;
+}
 
     const compatibleImageUrl = imageUrl.replace(
         '/image/upload/',
-        '/image/upload/f_jpg,q_auto/',
+        '/image/upload/f_jpg,q_auto,w_1200,c_limit/',
     );
 
     return {
