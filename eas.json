@@ -13,7 +13,11 @@
       }
     },
     "preview": {
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://future-pressroom-ai-production.up.railway.app/api",
+        "EXPO_PUBLIC_SITE_URL": "https://www.futurepressroom.com"
+      }
     },
     "production": {
       "autoIncrement": true

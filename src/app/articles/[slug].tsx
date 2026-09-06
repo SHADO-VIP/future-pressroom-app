@@ -1,3 +1,12 @@
+import { BottomTabInset, Colors, Spacing } from '@/constants/theme';
+import {
+    getPublishedArticle,
+    type PublishedArticle,
+} from '@/services/articles';
+import {
+    isArticleBookmarked,
+    toggleArticleBookmark,
+} from '@/services/bookmarks';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import { router, useLocalSearchParams } from 'expo-router';
@@ -12,18 +21,10 @@ import {
     Text,
     View,
     useColorScheme,
+    useWindowDimensions,
 } from 'react-native';
+import RenderHTML from 'react-native-render-html';
 import { SafeAreaView } from 'react-native-safe-area-context';
-
-import { BottomTabInset, Colors, Spacing } from '@/constants/theme';
-import {
-    getPublishedArticle,
-    type PublishedArticle,
-} from '@/services/articles';
-import {
-    isArticleBookmarked,
-    toggleArticleBookmark,
-} from '@/services/bookmarks';
 
 type LoadResult = {
     slug: string;
@@ -44,6 +45,7 @@ function convertHtmlToText(value: string) {
         .replace(/<\/p>/gu, '\n\n')
         .replace(/<br\s*\/?>/gu, '\n')
         .replace(/<[^>]+>/gu, '')
+
         .replace(/&nbsp;/gu, ' ')
         .replace(/&quot;/gu, '"')
         .replace(/&#39;/gu, "'")
@@ -212,6 +214,8 @@ function ArticleContent({
     accentColor,
     styles,
 }: ArticleContentProps) {
+    const { width } = useWindowDimensions();
+    const contentWidth = width - Spacing.three * 2;
     const [isBookmarked, setIsBookmarked] = useState(false);
     const [isBookmarkLoading, setIsBookmarkLoading] = useState(true);
     const articleSlug = article.newsItem.seoMetadata.slug;
@@ -330,10 +334,27 @@ function ArticleContent({
                     ))}
                 </View>
             ) : null}
-
-            <Text style={styles.body}>
-                {convertHtmlToText(article.finalDraft.contentAr)}
-            </Text>
+            <RenderHTML
+                baseStyle={styles.body}
+                contentWidth={contentWidth}
+                source={{ html: article.finalDraft.contentAr }}
+                tagsStyles={{
+                    a: {
+                        color: accentColor,
+                        fontWeight: '800',
+                        textDecorationLine: 'underline',
+                    },
+                    blockquote: {
+                        marginHorizontal: 0,
+                        marginVertical: Spacing.three,
+                    },
+                    p: {
+                        marginTop: 0,
+                        marginBottom: Spacing.three,
+                        textAlign: 'right',
+                    },
+                }}
+            />
 
             {article.finalDraft.analysisAr ? (
                 <View style={styles.analysis}>
@@ -555,6 +576,24 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
             color: colors.text,
             fontSize: 17,
             lineHeight: 31,
+            textAlign: 'right',
+            writingDirection: 'rtl',
+        },
+        xPostButton: {
+            alignSelf: 'flex-end',
+            flexDirection: 'row-reverse',
+            alignItems: 'center',
+            gap: Spacing.two,
+            marginTop: Spacing.three,
+            paddingHorizontal: Spacing.three,
+            paddingVertical: Spacing.two,
+            borderRadius: 14,
+            backgroundColor: colors.accent,
+        },
+        xPostButtonText: {
+            color: '#FFFFFF',
+            fontSize: 13,
+            fontWeight: '800',
             textAlign: 'right',
             writingDirection: 'rtl',
         },
