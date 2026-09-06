@@ -1,56 +1,124 @@
-# Welcome to your Expo app 👋
+# Future Pressroom AI — Mobile App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A cross-platform Arabic news application for **Future Pressroom AI**, built with React Native, Expo, and TypeScript.
 
-## Get started
+The application delivers published news, reports, analysis, breaking headlines, category-based browsing, search, article sharing, and locally saved bookmarks through a responsive right-to-left interface.
 
-1. Install dependencies
+## Features
 
-   ```bash
-   npm install
-   ```
+- Latest published news and featured articles
+- Breaking-news headline ticker
+- News categories and dedicated category pages
+- Arabic article search
+- Full article reading experience
+- Article summaries, key points, analysis, and source attribution
+- Article sharing through native device options
+- Local article bookmarks
+- Light and dark themes
+- Right-to-left Arabic interface
+- Optimized Cloudinary image delivery
+- Responsive layouts for Android and iOS
+- Native application icon and splash screen
 
-2. Start the app
+## Technology Stack
 
-   ```bash
-   npx expo start
-   ```
+- React Native
+- Expo
+- Expo Router
+- TypeScript
+- Expo Image
+- AsyncStorage
+- React Native Render HTML
+- EAS Build
+- REST API integration
 
-In the output, you'll find options to open the app in a
+## Backend Integration
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+The application consumes the public REST API provided by the Future Pressroom AI platform.
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+Production services:
 
-## Get a fresh project
+- Website: [futurepressroom.com](https://www.futurepressroom.com)
+- API: `https://future-pressroom-ai-production.up.railway.app/api`
 
-When you're ready, run:
+## Getting Started
+
+### Requirements
+
+- Node.js
+- npm
+- Expo CLI through `npx`
+- Expo Go or a compatible development build
+
+### Installation
 
 ```bash
-npm run reset-project
+git clone git@github.com:SHADO-VIP/future-pressroom-app.git
+cd future-pressroom-app
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+### Environment Configuration
 
-### Other setup steps
+Create a `.env.local` file in the project root:
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+```env
+EXPO_PUBLIC_API_URL=https://future-pressroom-ai-production.up.railway.app/api
+EXPO_PUBLIC_SITE_URL=https://www.futurepressroom.com
+```
 
-## Learn more
+The `.env.local` file is excluded from Git and must not contain private credentials.
 
-To learn more about developing your project with Expo, look at the following resources:
+### Start Development
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```bash
+npx expo start
+```
 
-## Join the community
+### Quality Checks
 
-Join our community of developers creating universal apps.
+```bash
+npx tsc --noEmit
+npx expo lint
+```
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Production Build
+
+Android production builds are generated through EAS Build:
+
+```bash
+npx eas-cli@latest build --platform android --profile production
+```
+
+The resulting Android App Bundle (`.aab`) can be uploaded to Google Play Console.
+
+## Project Structure
+
+```text
+src/
+├── app/          Application screens and routes
+├── components/   Reusable interface components
+├── constants/    Theme and design constants
+├── hooks/        Shared React hooks
+└── services/     API and local-storage services
+```
+
+## Current Status
+
+- Android production build completed
+- Google Play publishing preparation in progress
+- iOS release preparation planned
+
+## Related Project
+
+The mobile application is part of the broader [Future Pressroom AI](https://github.com/SHADO-VIP/future-pressroom-ai) platform, an AI-powered newsroom workflow for collecting, verifying, editing, and publishing journalistic content.
+
+## Author
+
+**Shadia Sarhan**
+
+Senior Political and Economic News Editor, Journalist, and AI Solutions Developer.
+
+- [LinkedIn](https://www.linkedin.com/in/shadia-sarhan-36550823a/)
+- [Portfolio](https://shado-portfolio.vercel.app/)
+- [GitHub](https://github.com/SHADO-VIP)
