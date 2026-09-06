@@ -14,6 +14,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect, useState } from 'react';
 import {
     ActivityIndicator,
+    Platform,
     Pressable,
     ScrollView,
     Share,
@@ -574,8 +575,8 @@ function createStyles(colors: typeof Colors.light | typeof Colors.dark) {
         body: {
             marginTop: Spacing.four,
             color: colors.text,
-            fontSize: 17,
-            lineHeight: 31,
+            fontSize: Platform.OS === 'android' ? 15 : 17,
+            lineHeight: Platform.OS === 'android' ? 27 : 31,
             textAlign: 'right',
             writingDirection: 'rtl',
         },

@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 export type PublishedArticle = {
     id: string;
     publishedAt: string;
@@ -57,6 +58,32 @@ type GetPublishedArticlesOptions = {
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL?.replace(/\/+$/u, '');
 
+function normalizeArticleImage(article: PublishedArticle) {
+    const selectedImage = article.selectedImage;
+const imageUrl = selectedImage?.imageUrl;
+
+    if (
+        Platform.OS !== 'android' ||
+        !imageUrl ||
+        !imageUrl.includes('res.cloudinary.com/') ||
+        !/\.webp(?:\?|$)/iu.test(imageUrl)
+    ) {
+        return article;
+    }
+
+    const compatibleImageUrl = imageUrl.replace(
+        '/image/upload/',
+        '/image/upload/f_jpg,q_auto/',
+    );
+
+    return {
+        ...article,
+        selectedImage: {
+            ...selectedImage,
+            imageUrl: compatibleImageUrl,
+        },
+    };
+}
 export async function getPublishedArticles({
     category,
     search,
@@ -93,7 +120,10 @@ export async function getPublishedArticles({
         throw new Error('Invalid articles response.');
     }
 
-    return result.data;
+    return {
+    ...result.data,
+    articles: result.data.articles.map(normalizeArticleImage),
+};
 }
 type ArticleResponse = {
     success: true;
@@ -125,7 +155,7 @@ export async function getPublishedArticle(
         throw new Error('Invalid article response.');
     }
 
-    return result.data.article;
+    return normalizeArticleImage(result.data.article);
 }
 export type BreakingHeadline = {
     id: string;
