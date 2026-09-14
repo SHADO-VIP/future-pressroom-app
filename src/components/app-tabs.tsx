@@ -65,6 +65,19 @@ export default function AppTabs() {
         }}
       />
       <Tabs.Screen
+        name="contact"
+        options={{
+          title: 'اتصل بنا',
+          tabBarIcon: ({ color, focused, size }) => (
+            <Ionicons
+              color={color}
+              name={focused ? 'mail' : 'mail-outline'}
+              size={size}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="articles/[slug]"
         options={{
           href: null,

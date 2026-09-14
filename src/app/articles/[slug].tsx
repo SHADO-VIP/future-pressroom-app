@@ -220,6 +220,8 @@ function ArticleContent({
     const [isBookmarked, setIsBookmarked] = useState(false);
     const [isBookmarkLoading, setIsBookmarkLoading] = useState(true);
     const articleSlug = article.newsItem.seoMetadata.slug;
+    const sourceName =
+        article.finalDraft.sourceCredit?.trim() || article.newsItem.source.name;
 
     useEffect(() => {
         let isActive = true;
@@ -365,11 +367,9 @@ function ArticleContent({
                     </Text>
                 </View>
             ) : null}
-            {article.finalDraft.sourceCredit ? (
-                <Text style={styles.sourceCredit}>
-                    المصدر: {article.finalDraft.sourceCredit}
-                </Text>
-            ) : null}
+            <Text style={styles.sourceCredit}>
+                المصدر الأصلي: {sourceName}
+            </Text>
         </View>
     );
 }
